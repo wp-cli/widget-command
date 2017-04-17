@@ -32,8 +32,14 @@
             "dev-master": "1.x-dev"
         },
         "commands": [
-            "widget",
-            "sidebar"
+            "widget add",
+            "widget deactivate",
+            "widget delete",
+            "widget list",
+            "widget move",
+            "widget reset",
+            "widget update",
+            "sidebar list"
         ]
     }
 }
