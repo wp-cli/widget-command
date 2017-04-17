@@ -82,5 +82,3 @@ class Sidebar_Command extends WP_CLI_Command {
 	}
 
 }
-
-WP_CLI::add_command( 'sidebar', 'Sidebar_Command' );
