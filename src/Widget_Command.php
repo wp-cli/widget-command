@@ -650,5 +650,3 @@ class Widget_Command extends WP_CLI_Command {
 	}
 
 }
-
-WP_CLI::add_command( 'widget', 'Widget_Command' );
