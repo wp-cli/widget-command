@@ -20,7 +20,9 @@
         "psr-4": {
             "": "src/"
         },
-        "files": [ "widget-command.php" ]
+        "files": [
+            "widget-command.php"
+        ]
     },
     "require": {},
     "require-dev": {
@@ -40,6 +42,7 @@
             "widget reset",
             "widget update",
             "sidebar list"
-        ]
+        ],
+        "bundled": true
     }
 }
