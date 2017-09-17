@@ -3,7 +3,9 @@
 use WP_CLI\Utils;
 
 /**
- * Manage sidebar widgets.
+ * Manages widgets, including adding and moving them within sidebars.
+ *
+ * A [widget](https://developer.wordpress.org/themes/functionality/widgets/) adds content and features to a widget area (also called a [sidebar](https://developer.wordpress.org/themes/functionality/sidebars/)).
  *
  * ## EXAMPLES
  *
