@@ -3,8 +3,10 @@ Feature: Reset WordPress sidebars
   Scenario: Reset sidebar
     Given a WP install
 
-    When I run `wp theme install twentytwelve --activate`
+    # Might already be installed depending on WP version so STDERR may or may not be empty
+    When I try `wp theme install twentytwelve --activate`
     Then STDOUT should not be empty
+    And the return code should be 0
 
     When I run `wp widget list sidebar-1 --format=count`
     Then STDOUT should be:
@@ -85,8 +87,10 @@ Feature: Reset WordPress sidebars
   Scenario: Reset all sidebars
     Given a WP install
 
-    When I run `wp theme install twentytwelve --activate`
+    # Might already be installed depending on WP version so STDERR may or may not be empty
+    When I try `wp theme install twentytwelve --activate`
     Then STDOUT should not be empty
+    And the return code should be 0
 
     When I run `wp widget add calendar sidebar-1 --title="Calendar"`
     Then STDOUT should not be empty
@@ -129,8 +133,10 @@ Feature: Reset WordPress sidebars
   Scenario: Testing movement of widgets while reset
     Given a WP install
 
-    When I run `wp theme install twentytwelve --activate`
+    # Might already be installed depending on WP version so STDERR may or may not be empty
+    When I try `wp theme install twentytwelve --activate`
     Then STDOUT should not be empty
+    And the return code should be 0
 
     When I run `wp widget add calendar sidebar-2 --title="Calendar"`
     Then STDOUT should not be empty
