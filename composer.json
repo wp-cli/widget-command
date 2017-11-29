@@ -1,6 +1,6 @@
 {
     "name": "wp-cli/widget-command",
-    "description": "Manage widgets and sidebars.",
+    "description": "Adds, moves, and removes widgets; lists sidebars.",
     "type": "wp-cli-package",
     "homepage": "https://github.com/wp-cli/widget-command",
     "support": {
@@ -34,6 +34,7 @@
             "dev-master": "1.x-dev"
         },
         "commands": [
+            "widget",
             "widget add",
             "widget deactivate",
             "widget delete",
@@ -41,6 +42,7 @@
             "widget move",
             "widget reset",
             "widget update",
+            "sidebar",
             "sidebar list"
         ],
         "bundled": true
