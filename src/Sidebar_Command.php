@@ -22,7 +22,7 @@ class Sidebar_Command extends WP_CLI_Command {
 	);
 
 	/**
-	 * List registered sidebars.
+	 * Lists registered sidebars.
 	 *
 	 * ## OPTIONS
 	 *

@@ -30,7 +30,6 @@ use WP_CLI\Utils;
  *     $ wp widget delete calendar-2 archive-1
  *     Success: 2 widgets removed from sidebar.
  */
-
 class Widget_Command extends WP_CLI_Command {
 
 	private $fields = array(
@@ -41,7 +40,7 @@ class Widget_Command extends WP_CLI_Command {
 		);
 
 	/**
-	 * List widgets associated with a sidebar.
+	 * Lists widgets associated with a sidebar.
 	 *
 	 * ## OPTIONS
 	 *
@@ -102,7 +101,7 @@ class Widget_Command extends WP_CLI_Command {
 	}
 
 	/**
-	 * Add a widget to a sidebar.
+	 * Adds a widget to a sidebar.
 	 *
 	 * Creates a new widget entry in the database, and associates it with the
 	 * sidebar.
@@ -139,7 +138,7 @@ class Widget_Command extends WP_CLI_Command {
 			WP_CLI::error( "Invalid widget type." );
 		}
 
-		/**
+		/*
 		 * Adding a widget is as easy as:
 		 * 1. Creating a new widget option
 		 * 2. Adding the widget to the sidebar
@@ -165,7 +164,7 @@ class Widget_Command extends WP_CLI_Command {
 	}
 
 	/**
-	 * Update options for an existing widget.
+	 * Updates options for an existing widget.
 	 *
 	 * ## OPTIONS
 	 *
@@ -206,7 +205,7 @@ class Widget_Command extends WP_CLI_Command {
 	}
 
 	/**
-	 * Move the position of a widget.
+	 * Moves the position of a widget.
 	 *
 	 * Changes the order of a widget in its existing sidebar, or moves it to a
 	 * new sidebar.
@@ -264,7 +263,7 @@ class Widget_Command extends WP_CLI_Command {
 	}
 
 	/**
-	 * Deactivate one or more widgets from an active sidebar.
+	 * Deactivates one or more widgets from an active sidebar.
 	 *
 	 * Moves widgets to Inactive Widgets.
 	 *
@@ -308,7 +307,7 @@ class Widget_Command extends WP_CLI_Command {
 	}
 
 	/**
-	 * Delete one or more widgets from a sidebar.
+	 * Deletes one or more widgets from a sidebar.
 	 *
 	 * ## OPTIONS
 	 *
@@ -353,7 +352,7 @@ class Widget_Command extends WP_CLI_Command {
 	}
 
 	/**
-	 * Reset sidebar.
+	 * Resets sidebar.
 	 *
 	 * Removes all widgets from the sidebar and places them in Inactive Widgets.
 	 *
@@ -435,7 +434,7 @@ class Widget_Command extends WP_CLI_Command {
 	}
 
 	/**
-	 * Check whether a sidebar is a valid sidebar
+	 * Checks whether a sidebar is a valid sidebar
 	 *
 	 * @param string $sidebar_id
 	 */
@@ -450,7 +449,7 @@ class Widget_Command extends WP_CLI_Command {
 	}
 
 	/**
-	 * Check whether the specified widget is on the sidebar
+	 * Checks whether the specified widget is on the sidebar
 	 *
 	 * @param string $widget_id
 	 */
@@ -471,7 +470,7 @@ class Widget_Command extends WP_CLI_Command {
 	}
 
 	/**
-	 * Get the widgets (and their associated data) for a given sidebar
+	 * Gets the widgets (and their associated data) for a given sidebar
 	 *
 	 * @param string $sidebar_id
 	 * @return array
@@ -520,7 +519,7 @@ class Widget_Command extends WP_CLI_Command {
 	}
 
 	/**
-	 * Get the widget's name, option index, sidebar, and sidebar index from its ID
+	 * Gets the widget's name, option index, sidebar, and sidebar index from its ID
 	 *
 	 * @param string $widget_id
 	 * @return array
@@ -548,7 +547,7 @@ class Widget_Command extends WP_CLI_Command {
 	}
 
 	/**
-	 * Get the options for a given widget
+	 * Gets the options for a given widget
 	 *
 	 * @param string $name
 	 * @return array
@@ -558,7 +557,7 @@ class Widget_Command extends WP_CLI_Command {
 	}
 
 	/**
-	 * Update the options for a given widget
+	 * Updates the options for a given widget
 	 *
 	 * @param string $name
 	 * @param mixed
@@ -568,7 +567,7 @@ class Widget_Command extends WP_CLI_Command {
 	}
 
 	/**
-	 * Reposition a widget within a sidebar or move to another sidebar.
+	 * Repositions a widget within a sidebar or move to another sidebar.
 	 *
 	 * @param string $widget_id
 	 * @param string|null $current_sidebar_id
@@ -614,7 +613,7 @@ class Widget_Command extends WP_CLI_Command {
 	}
 
 	/**
-	 * Get a widget's instantiated object based on its name
+	 * Gets a widget's instantiated object based on its name
 	 *
 	 * @param string $id_base Name of the widget
 	 * @return WP_Widget|false
@@ -631,7 +630,7 @@ class Widget_Command extends WP_CLI_Command {
 	}
 
 	/**
-	 * Clean up a widget's options based on its update callback
+	 * Cleans up a widget's options based on its update callback
 	 *
 	 * @param string $id_base Name of the widget
 	 * @param mixed $dirty_options
