@@ -1,6 +1,6 @@
 {
     "name": "wp-cli/widget-command",
-    "description": "Manage widgets and sidebars.",
+    "description": "Manages widgets and sidebars.",
     "type": "wp-cli-package",
     "homepage": "https://github.com/wp-cli/widget-command",
     "support": {

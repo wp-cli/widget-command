@@ -1,7 +1,7 @@
 wp-cli/widget-command
 =====================
 
-Manage widgets and sidebars.
+Manages widgets and sidebars.
 
 [![Build Status](https://travis-ci.org/wp-cli/widget-command.svg?branch=master)](https://travis-ci.org/wp-cli/widget-command)
 
@@ -13,7 +13,7 @@ This package implements the following commands:
 
 ### wp widget add
 
-Add a widget to a sidebar.
+Adds a widget to a sidebar.
 
 ~~~
 wp widget add <name> <sidebar-id> [<position>] [--<field>=<value>]
@@ -46,7 +46,7 @@ sidebar.
 
 ### wp widget deactivate
 
-Deactivate one or more widgets from an active sidebar.
+Deactivates one or more widgets from an active sidebar.
 
 ~~~
 wp widget deactivate <widget-id>...
@@ -69,7 +69,7 @@ Moves widgets to Inactive Widgets.
 
 ### wp widget delete
 
-Delete one or more widgets from a sidebar.
+Deletes one or more widgets from a sidebar.
 
 ~~~
 wp widget delete <widget-id>...
@@ -90,7 +90,7 @@ wp widget delete <widget-id>...
 
 ### wp widget list
 
-List widgets associated with a sidebar.
+Lists widgets associated with a sidebar.
 
 ~~~
 wp widget list <sidebar-id> [--fields=<fields>] [--format=<format>]
@@ -139,7 +139,7 @@ There are no optionally available fields.
 
 ### wp widget move
 
-Move the position of a widget.
+Moves the position of a widget.
 
 ~~~
 wp widget move <widget-id> [--position=<position>] [--sidebar-id=<sidebar-id>]
@@ -173,7 +173,7 @@ new sidebar.
 
 ### wp widget reset
 
-Reset sidebar.
+Resets sidebar.
 
 ~~~
 wp widget reset [<sidebar-id>...] [--all]
@@ -210,7 +210,7 @@ Removes all widgets from the sidebar and places them in Inactive Widgets.
 
 ### wp widget update
 
-Update options for an existing widget.
+Updates options for an existing widget.
 
 ~~~
 wp widget update <widget-id> [--<field>=<value>]
@@ -234,7 +234,7 @@ wp widget update <widget-id> [--<field>=<value>]
 
 ### wp sidebar list
 
-List registered sidebars.
+Lists registered sidebars.
 
 ~~~
 wp sidebar list [--fields=<fields>] [--format=<format>]
