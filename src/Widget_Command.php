@@ -1,6 +1,7 @@
 <?php
 
 use WP_CLI\Utils;
+use WP_CLI\Formatter;
 
 /**
  * Manages widgets, including adding and moving them within sidebars.
@@ -32,12 +33,12 @@ use WP_CLI\Utils;
  */
 class Widget_Command extends WP_CLI_Command {
 
-	private $fields = array(
+	private $fields = [
 		'name',
 		'id',
 		'position',
 		'options',
-		);
+	];
 
 	/**
 	 * Lists widgets associated with a sidebar.
@@ -95,7 +96,7 @@ class Widget_Command extends WP_CLI_Command {
 			$output_widgets = wp_list_pluck( $output_widgets, 'id' );
 		}
 
-		$formatter = new \WP_CLI\Formatter( $assoc_args, $this->fields );
+		$formatter = new Formatter( $assoc_args, $this->fields );
 		$formatter->display_items( $output_widgets );
 
 	}
@@ -131,11 +132,12 @@ class Widget_Command extends WP_CLI_Command {
 	public function add( $args, $assoc_args ) {
 
 		list( $name, $sidebar_id ) = $args;
-		$position = \WP_CLI\Utils\get_flag_value( $args, 2, 1 ) - 1;
+		$position                  = Utils\get_flag_value( $args, 2, 1 ) - 1;
 		$this->validate_sidebar( $sidebar_id );
 
-		if ( false == ( $widget = $this->get_widget_obj( $name ) ) ) {
-			WP_CLI::error( "Invalid widget type." );
+		$widget = $this->get_widget_obj( $name );
+		if ( false === $widget ) {
+			WP_CLI::error( 'Invalid widget type.' );
 		}
 
 		/*
@@ -144,22 +146,22 @@ class Widget_Command extends WP_CLI_Command {
 		 * 2. Adding the widget to the sidebar
 		 * 3. Positioning appropriately
 		 */
-		$widget_options = $option_keys = $this->get_widget_options( $name );
+		$widget_options = $this->get_widget_options( $name );
+		$option_keys    = $widget_options;
 		if ( ! isset( $widget_options['_multiwidget'] ) ) {
 			$widget_options['_multiwidget'] = 1;
 		}
 		unset( $option_keys['_multiwidget'] );
-		$option_keys = array_keys( $option_keys );
-		$last_key = array_pop( $option_keys );
-		$option_index = $last_key + 1;
+		$option_keys                     = array_keys( $option_keys );
+		$last_key                        = array_pop( $option_keys );
+		$option_index                    = $last_key + 1;
 		$widget_options[ $option_index ] = $this->sanitize_widget_options( $name, $assoc_args, array() );
 		$this->update_widget_options( $name, $widget_options );
 
 		$widget_id = $name . '-' . $option_index;
 		$this->move_sidebar_widget( $widget_id, null, $sidebar_id, null, $position );
 
-		WP_CLI::success( "Added widget to sidebar." );
-
+		WP_CLI::success( 'Added widget to sidebar.' );
 
 	}
 
@@ -190,17 +192,17 @@ class Widget_Command extends WP_CLI_Command {
 		}
 
 		if ( empty( $assoc_args ) ) {
-			WP_CLI::error( "No options specified to update." );
+			WP_CLI::error( 'No options specified to update.' );
 		}
 
 		list( $name, $option_index ) = $this->get_widget_data( $widget_id );
 
-		$widget_options = $this->get_widget_options( $name );
-		$clean_options = $this->sanitize_widget_options( $name, $assoc_args, $widget_options[ $option_index ] );
-		$widget_options[ $option_index ] = array_merge( (array)$widget_options[ $option_index ], $clean_options );
+		$widget_options                  = $this->get_widget_options( $name );
+		$clean_options                   = $this->sanitize_widget_options( $name, $assoc_args, $widget_options[ $option_index ] );
+		$widget_options[ $option_index ] = array_merge( (array) $widget_options[ $option_index ], $clean_options );
 		$this->update_widget_options( $name, $widget_options );
 
-		WP_CLI::success( "Widget updated." );
+		WP_CLI::success( 'Widget updated.' );
 
 	}
 
@@ -241,7 +243,7 @@ class Widget_Command extends WP_CLI_Command {
 		}
 
 		if ( empty( $assoc_args['position'] ) && empty( $assoc_args['sidebar-id'] ) ) {
-			WP_CLI::error( "A new position or new sidebar must be specified." );
+			WP_CLI::error( 'A new position or new sidebar must be specified.' );
 		}
 
 		list( $name, $option_index, $current_sidebar_id, $current_sidebar_index ) = $this->get_widget_data( $widget_id );
@@ -251,14 +253,14 @@ class Widget_Command extends WP_CLI_Command {
 
 		$new_sidebar_index = ! empty( $assoc_args['position'] ) ? $assoc_args['position'] - 1 : $current_sidebar_index;
 		// Moving between sidebars adds to the top
-		if ( $new_sidebar_id != $current_sidebar_id && $new_sidebar_index == $current_sidebar_index ) {
+		if ( $new_sidebar_id !== $current_sidebar_id && $new_sidebar_index === $current_sidebar_index ) {
 			// Human-readable positions are different than numerically indexed array
 			$new_sidebar_index = 0;
 		}
 
 		$this->move_sidebar_widget( $widget_id, $current_sidebar_id, $new_sidebar_id, $current_sidebar_index, $new_sidebar_index );
 
-		WP_CLI::success( "Widget moved." );
+		WP_CLI::success( 'Widget moved.' );
 
 	}
 
@@ -282,9 +284,10 @@ class Widget_Command extends WP_CLI_Command {
 	 */
 	public function deactivate( $args, $assoc_args ) {
 
-		$count = $errors = 0;
+		$count  = 0;
+		$errors = 0;
 
-		foreach( $args as $widget_id ) {
+		foreach ( $args as $widget_id ) {
 			if ( ! $this->validate_sidebar_widget( $widget_id ) ) {
 				WP_CLI::warning( "Widget '{$widget_id}' doesn't exist." );
 				$errors++;
@@ -292,7 +295,7 @@ class Widget_Command extends WP_CLI_Command {
 			}
 
 			list( $name, $option_index, $sidebar_id, $sidebar_index ) = $this->get_widget_data( $widget_id );
-			if ( 'wp_inactive_widgets' == $sidebar_id ) {
+			if ( 'wp_inactive_widgets' === $sidebar_id ) {
 				WP_CLI::warning( sprintf( "'%s' is already deactivated.", $widget_id ) );
 				continue;
 			}
@@ -324,9 +327,10 @@ class Widget_Command extends WP_CLI_Command {
 	 */
 	public function delete( $args, $assoc_args ) {
 
-		$count = $errors = 0;
+		$count  = 0;
+		$errors = 0;
 
-		foreach( $args as $widget_id ) {
+		foreach ( $args as $widget_id ) {
 			if ( ! $this->validate_sidebar_widget( $widget_id ) ) {
 				WP_CLI::warning( "Widget '{$widget_id}' doesn't exist." );
 				$errors++;
@@ -385,7 +389,7 @@ class Widget_Command extends WP_CLI_Command {
 
 		global $wp_registered_sidebars;
 
-		$all = \WP_CLI\Utils\get_flag_value( $assoc_args, 'all', false );
+		$all = Utils\get_flag_value( $assoc_args, 'all', false );
 
 		// Bail if no arguments and no all flag.
 		if ( ! $all && empty( $args ) ) {
@@ -407,7 +411,8 @@ class Widget_Command extends WP_CLI_Command {
 			WP_CLI::error( 'No sidebar registered.' );
 		}
 
-		$count = $errors = 0;
+		$count  = 0;
+		$errors = 0;
 		foreach ( $args as $sidebar_id ) {
 			if ( ! array_key_exists( $sidebar_id, $wp_registered_sidebars ) ) {
 				WP_CLI::warning( sprintf( 'Invalid sidebar: %s', $sidebar_id ) );
@@ -418,8 +423,7 @@ class Widget_Command extends WP_CLI_Command {
 			$widgets = $this->get_sidebar_widgets( $sidebar_id );
 			if ( empty( $widgets ) ) {
 				WP_CLI::warning( sprintf( "Sidebar '%s' is already empty.", $sidebar_id ) );
-			}
-			else {
+			} else {
 				foreach ( $widgets as $widget ) {
 					$widget_id = $widget->id;
 					list( $name, $option_index, $new_sidebar_id, $sidebar_index ) = $this->get_widget_data( $widget_id );
@@ -441,10 +445,10 @@ class Widget_Command extends WP_CLI_Command {
 	private function validate_sidebar( $sidebar_id ) {
 		global $wp_registered_sidebars;
 
-		\WP_CLI\Utils\wp_register_unused_sidebar();
+		Utils\wp_register_unused_sidebar();
 
 		if ( ! array_key_exists( $sidebar_id, $wp_registered_sidebars ) ) {
-			WP_CLI::error( "Invalid sidebar." );
+			WP_CLI::error( 'Invalid sidebar.' );
 		}
 	}
 
@@ -458,13 +462,12 @@ class Widget_Command extends WP_CLI_Command {
 		$sidebars_widgets = $this->wp_get_sidebars_widgets();
 
 		$widget_exists = false;
-		foreach( $sidebars_widgets as $sidebar_id => $widgets ) {
+		foreach ( $sidebars_widgets as $sidebar_id => $widgets ) {
 
-			if ( in_array( $widget_id, $widgets ) ) {
+			if ( in_array( $widget_id, $widgets, true ) ) {
 				$widget_exists = true;
 				break;
 			}
-
 		}
 		return $widget_exists;
 	}
@@ -484,19 +487,19 @@ class Widget_Command extends WP_CLI_Command {
 		}
 
 		$prepared_widgets = array();
-		foreach( $all_widgets[ $sidebar_id ] as $key => $widget_id ) {
+		foreach ( $all_widgets[ $sidebar_id ] as $key => $widget_id ) {
 
-			$prepared_widget = new stdClass;
+			$prepared_widget = new stdClass();
 
-			$parts = explode( '-', $widget_id );
+			$parts        = explode( '-', $widget_id );
 			$option_index = array_pop( $parts );
-			$widget_name = implode( '-', $parts );
+			$widget_name  = implode( '-', $parts );
 
-			$prepared_widget->name = $widget_name;
-			$prepared_widget->id = $widget_id;
+			$prepared_widget->name     = $widget_name;
+			$prepared_widget->id       = $widget_id;
 			$prepared_widget->position = $key + 1;
-			$widget_options = get_option( 'widget_' . $widget_name );
-			$prepared_widget->options = $widget_options[ $option_index ];
+			$widget_options            = get_option( 'widget_' . $widget_name );
+			$prepared_widget->options  = $widget_options[ $option_index ];
 
 			$prepared_widgets[] = $prepared_widget;
 		}
@@ -526,21 +529,21 @@ class Widget_Command extends WP_CLI_Command {
 	 */
 	private function get_widget_data( $widget_id ) {
 
-		$parts = explode( '-', $widget_id );
+		$parts        = explode( '-', $widget_id );
 		$option_index = array_pop( $parts );
-		$name = implode( '-', $parts );
+		$name         = implode( '-', $parts );
 
-		$sidebar_id = false;
+		$sidebar_id    = false;
 		$sidebar_index = false;
-		$all_widgets = $this->wp_get_sidebars_widgets();
-		foreach( $all_widgets as $s_id => &$widgets ) {
+		$all_widgets   = $this->wp_get_sidebars_widgets();
+		foreach ( $all_widgets as $s_id => &$widgets ) {
 
-			if ( false !== ( $key = array_search( $widget_id, $widgets ) ) ) {
-				$sidebar_id = $s_id;
+			$key = array_search( $widget_id, $widgets, true );
+			if ( false !== $key ) {
+				$sidebar_id    = $s_id;
 				$sidebar_index = $key;
 				break;
 			}
-
 		}
 
 		return array( $name, $option_index, $sidebar_id, $sidebar_index );
@@ -577,7 +580,7 @@ class Widget_Command extends WP_CLI_Command {
 	 */
 	private function move_sidebar_widget( $widget_id, $current_sidebar_id, $new_sidebar_id, $current_index, $new_index ) {
 
-		$all_widgets = $this->wp_get_sidebars_widgets();
+		$all_widgets     = $this->wp_get_sidebars_widgets();
 		$needs_placement = true;
 		// Existing widget
 		if ( $current_sidebar_id && ! is_null( $current_index ) ) {
@@ -601,10 +604,10 @@ class Widget_Command extends WP_CLI_Command {
 		}
 
 		if ( $needs_placement ) {
-			$widgets = ! empty( $all_widgets[ $new_sidebar_id ] ) ? $all_widgets[ $new_sidebar_id ] : array();
-			$before = array_slice( $widgets, 0, $new_index, true );
-			$after = array_slice( $widgets, $new_index, count( $widgets ), true );
-			$widgets = array_merge( $before, array( $widget_id ), $after );
+			$widgets                        = ! empty( $all_widgets[ $new_sidebar_id ] ) ? $all_widgets[ $new_sidebar_id ] : array();
+			$before                         = array_slice( $widgets, 0, $new_index, true );
+			$after                          = array_slice( $widgets, $new_index, count( $widgets ), true );
+			$widgets                        = array_merge( $before, array( $widget_id ), $after );
 			$all_widgets[ $new_sidebar_id ] = array_values( $widgets );
 		}
 
@@ -646,6 +649,7 @@ class Widget_Command extends WP_CLI_Command {
 
 		// No easy way to determine expected array keys for $dirty_options
 		// because Widget API dependent on the form fields
+		// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- Whitelisting due to above reason.
 		return @$widget->update( $dirty_options, $old_options );
 
 	}
