@@ -1,5 +1,8 @@
 <?php
 
+use WP_CLI\Utils;
+use WP_CLI\Formatter;
+
 /**
  * Lists registered sidebars.
  *
@@ -15,11 +18,11 @@
  */
 class Sidebar_Command extends WP_CLI_Command {
 
-	private $fields = array(
+	private $fields = [
 		'name',
 		'id',
-		'description'
-	);
+		'description',
+	];
 
 	/**
 	 * Lists registered sidebars.
@@ -70,16 +73,15 @@ class Sidebar_Command extends WP_CLI_Command {
 	public function list_( $args, $assoc_args ) {
 		global $wp_registered_sidebars;
 
-		\WP_CLI\Utils\wp_register_unused_sidebar();
+		Utils\wp_register_unused_sidebar();
 
 		if ( ! empty( $assoc_args['format'] ) && 'ids' === $assoc_args['format'] ) {
 			$sidebars = wp_list_pluck( $wp_registered_sidebars, 'id' );
-		}
-		else {
+		} else {
 			$sidebars = $wp_registered_sidebars;
 		}
 
-		$formatter = new \WP_CLI\Formatter( $assoc_args, $this->fields );
+		$formatter = new Formatter( $assoc_args, $this->fields );
 		$formatter->display_items( $sidebars );
 	}
 
