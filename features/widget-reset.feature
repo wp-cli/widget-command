@@ -3,7 +3,7 @@ Feature: Reset WordPress sidebars
   Scenario: Reset sidebar
     Given a WP install
 
-    When I run `wp theme delete twentytwelve --force`
+    When I try `wp theme delete twentytwelve --force`
     And I run `wp theme install twentytwelve --activate`
     Then STDOUT should not be empty
     And the return code should be 0
@@ -87,7 +87,7 @@ Feature: Reset WordPress sidebars
   Scenario: Reset all sidebars
     Given a WP install
 
-    When I run `wp theme delete twentytwelve --force`
+    When I try `wp theme delete twentytwelve --force`
     And I run `wp theme install twentytwelve --activate`
     Then STDOUT should not be empty
     And the return code should be 0
