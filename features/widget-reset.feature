@@ -133,8 +133,8 @@ Feature: Reset WordPress sidebars
   Scenario: Testing movement of widgets while reset
     Given a WP install
 
-    # Might already be installed depending on WP version so STDERR may or may not be empty
-    When I try `wp theme install twentytwelve --activate`
+    When I try `wp theme delete twentytwelve --force`
+    And I run `wp theme install twentytwelve --activate`
     Then STDOUT should not be empty
     And the return code should be 0
 
