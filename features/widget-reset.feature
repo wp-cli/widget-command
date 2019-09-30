@@ -172,7 +172,7 @@ Feature: Reset WordPress sidebars
     Then STDOUT should not be empty
 
     When I run `wp widget list sidebar-2 --format=ids`
-    Then STDOUT should be:
+    Then STDOUT should contain:
       """
       search-3 calendar-1
       """
@@ -183,7 +183,7 @@ Feature: Reset WordPress sidebars
     And I run `wp widget list sidebar-2 --format=ids`
     Then STDOUT should be empty
     And I run `wp widget list wp_inactive_widgets --format=ids`
-    Then STDOUT should be:
+    Then STDOUT should contain:
       """
       calendar-1 search-3
       """
