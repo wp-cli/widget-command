@@ -9,10 +9,8 @@ Feature: Reset WordPress sidebars
     And the return code should be 0
 
     When I run `wp widget list sidebar-1 --format=count`
-    Then STDOUT should be:
-      """
-      6
-      """
+    # The count should be non-zero (= the sidebar contains widgets)
+    Then STDOUT should match /^\s*[1-9][0-9]*\s*$/
 
     When I run `wp widget reset sidebar-1`
     And I run `wp widget list sidebar-1 --format=count`
@@ -59,10 +57,8 @@ Feature: Reset WordPress sidebars
     Then STDOUT should not be empty
 
     When I run `wp widget list sidebar-2 --format=count`
-    Then STDOUT should be:
-      """
-      1
-      """
+    # The count should be non-zero (= the sidebar contains widgets)
+    Then STDOUT should match /^\s*[1-9][0-9]*\s*$/
 
     When I try `wp widget reset sidebar-1 sidebar-2 non-existing-sidebar-id`
     Then STDERR should be:
@@ -125,9 +121,41 @@ Feature: Reset WordPress sidebars
       0
       """
     When I run `wp widget list wp_inactive_widgets --format=ids`
-    Then STDOUT should be:
+    Then STDOUT should contain:
       """
-      text-1 search-3 meta-2 categories-2 archives-2 recent-comments-2 recent-posts-2 search-2 calendar-1
+      text-1
+      """
+    Then STDOUT should contain:
+      """
+      search-3
+      """
+    Then STDOUT should contain:
+      """
+      meta-2
+      """
+    Then STDOUT should contain:
+      """
+      categories-2
+      """
+    Then STDOUT should contain:
+      """
+      archives-2
+      """
+    Then STDOUT should contain:
+      """
+      recent-comments-2
+      """
+    Then STDOUT should contain:
+      """
+      recent-posts-2
+      """
+    Then STDOUT should contain:
+      """
+      search-2
+      """
+    Then STDOUT should contain:
+      """
+      calendar-1
       """
 
   Scenario: Testing movement of widgets while reset
@@ -144,7 +172,7 @@ Feature: Reset WordPress sidebars
     Then STDOUT should not be empty
 
     When I run `wp widget list sidebar-2 --format=ids`
-    Then STDOUT should be:
+    Then STDOUT should contain:
       """
       search-3 calendar-1
       """
@@ -155,7 +183,7 @@ Feature: Reset WordPress sidebars
     And I run `wp widget list sidebar-2 --format=ids`
     Then STDOUT should be empty
     And I run `wp widget list wp_inactive_widgets --format=ids`
-    Then STDOUT should be:
+    Then STDOUT should contain:
       """
       calendar-1 search-3
       """
