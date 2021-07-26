@@ -130,10 +130,13 @@ class Widget_Command extends WP_CLI_Command {
 	 * @subcommand add
 	 */
 	public function add( $args, $assoc_args ) {
-
 		list( $name, $sidebar_id ) = $args;
-		$position                  = Utils\get_flag_value( $args, 2, 1 ) - 1;
+
 		$this->validate_sidebar( $sidebar_id );
+
+		$position = count( $args ) > 2
+			? $args[2] - 1
+			: count( $this->get_sidebar_widgets( $sidebar_id ) );
 
 		$widget = $this->get_widget_obj( $name );
 		if ( false === $widget ) {
@@ -300,7 +303,13 @@ class Widget_Command extends WP_CLI_Command {
 				continue;
 			}
 
-			$this->move_sidebar_widget( $widget_id, $sidebar_id, 'wp_inactive_widgets', $sidebar_index, 0 );
+			$this->move_sidebar_widget(
+				$widget_id,
+				$sidebar_id,
+				'wp_inactive_widgets',
+				$sidebar_index,
+				count( $this->get_sidebar_widgets( 'wp_inactive_widgets' ) )
+			);
 
 			$count++;
 
@@ -427,7 +436,13 @@ class Widget_Command extends WP_CLI_Command {
 				foreach ( $widgets as $widget ) {
 					$widget_id = $widget->id;
 					list( $name, $option_index, $new_sidebar_id, $sidebar_index ) = $this->get_widget_data( $widget_id );
-					$this->move_sidebar_widget( $widget_id, $new_sidebar_id, 'wp_inactive_widgets', $sidebar_index, 0 );
+					$this->move_sidebar_widget(
+						$widget_id,
+						$new_sidebar_id,
+						'wp_inactive_widgets',
+						$sidebar_index,
+						count( $this->get_sidebar_widgets( 'wp_inactive_widgets' ) )
+					);
 				}
 				WP_CLI::log( sprintf( "Sidebar '%s' reset.", $sidebar_id ) );
 				$count++;

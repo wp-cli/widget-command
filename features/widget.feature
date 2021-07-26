@@ -61,7 +61,7 @@ Feature: Manage widgets in WordPress sidebar
       | text     | text-1     | 1        |
       | calendar | calendar-1 | 2        |
 
-    When I run `wp widget delete archives-1 text-2`
+    When I run `wp widget delete archives-1 text-1`
     Then STDOUT should be:
       """
       Success: Deleted 2 of 2 widgets.
@@ -88,7 +88,7 @@ Feature: Manage widgets in WordPress sidebar
     When I run `wp widget list sidebar-1 --format=ids`
     Then STDOUT should be:
       """
-      search-1 archives-1 text-1
+      search-1 archives-1 text-2
       """
 
     When I run `wp widget list sidebar-1 --fields=name,position,options`
