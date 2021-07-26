@@ -1,12 +1,14 @@
 Feature: Reset WordPress sidebars
 
-  Scenario: Reset sidebar
+  Background:
     Given a WP install
-
-    When I try `wp theme delete twentytwelve --force`
+    And I try `wp theme delete twentytwelve --force`
     And I run `wp theme install twentytwelve --activate`
-    Then STDOUT should not be empty
-    And the return code should be 0
+    And I try `wp widget reset --all`
+    And I try `wp widget delete wp_inactive_widgets $(wp widget list wp_inactive_widgets --format=ids)`
+
+  Scenario: Reset sidebar
+    Given I run `wp widget add text sidebar-1 --title="Text"`
 
     When I run `wp widget list sidebar-1 --format=count`
     # The count should be non-zero (= the sidebar contains widgets)
@@ -81,13 +83,6 @@ Feature: Reset WordPress sidebars
       """
 
   Scenario: Reset all sidebars
-    Given a WP install
-
-    When I try `wp theme delete twentytwelve --force`
-    And I run `wp theme install twentytwelve --activate`
-    Then STDOUT should not be empty
-    And the return code should be 0
-
     When I run `wp widget add calendar sidebar-1 --title="Calendar"`
     Then STDOUT should not be empty
     When I run `wp widget add search sidebar-2 --title="Quick Search"`
@@ -123,49 +118,18 @@ Feature: Reset WordPress sidebars
     When I run `wp widget list wp_inactive_widgets --format=ids`
     Then STDOUT should contain:
       """
-      text-1
-      """
-    Then STDOUT should contain:
-      """
-      search-3
-      """
-    Then STDOUT should contain:
-      """
-      meta-2
-      """
-    Then STDOUT should contain:
-      """
-      categories-2
-      """
-    Then STDOUT should contain:
-      """
-      archives-2
-      """
-    Then STDOUT should contain:
-      """
-      recent-comments-2
-      """
-    Then STDOUT should contain:
-      """
-      recent-posts-2
-      """
-    Then STDOUT should contain:
-      """
-      search-2
-      """
-    Then STDOUT should contain:
-      """
       calendar-1
+      """
+    Then STDOUT should contain:
+      """
+      search-1
+      """
+    Then STDOUT should contain:
+      """
+      text-1
       """
 
   Scenario: Testing movement of widgets while reset
-    Given a WP install
-
-    When I try `wp theme delete twentytwelve --force`
-    And I run `wp theme install twentytwelve --activate`
-    Then STDOUT should not be empty
-    And the return code should be 0
-
     When I run `wp widget add calendar sidebar-2 --title="Calendar"`
     Then STDOUT should not be empty
     And I run `wp widget add search sidebar-2 --title="Quick Search"`
@@ -174,7 +138,7 @@ Feature: Reset WordPress sidebars
     When I run `wp widget list sidebar-2 --format=ids`
     Then STDOUT should contain:
       """
-      search-3 calendar-1
+      search-1 calendar-1
       """
     When I run `wp widget list wp_inactive_widgets --format=ids`
     Then STDOUT should be empty
@@ -185,5 +149,5 @@ Feature: Reset WordPress sidebars
     And I run `wp widget list wp_inactive_widgets --format=ids`
     Then STDOUT should contain:
       """
-      calendar-1 search-3
+      calendar-1 search-1
       """
