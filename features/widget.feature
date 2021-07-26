@@ -19,25 +19,25 @@ Feature: Manage widgets in WordPress sidebar
     When I run `wp widget list sidebar-1 --fields=name,id,position`
     Then STDOUT should be a table containing rows:
       | name     | id         | position |
-      | text     | text-2     | 1        |
-      | search   | search-1   | 2        |
+      | text     | text-1     | 1        |
+      | archives | archives-1 | 2        |
       | calendar | calendar-1 | 3        |
-      | archives | archives-1 | 4        |
-      | text     | text-1     | 5        |
+      | search   | search-1   | 4        |
+      | text     | text-2     | 5        |
 
-    When I run `wp widget move archives-1 --position=2`
+    When I run `wp widget move search-1 --position=2`
     Then STDOUT should not be empty
 
     When I run `wp widget list sidebar-1 --fields=name,id,position`
     Then STDOUT should be a table containing rows:
       | name     | id         | position |
-      | text     | text-2     | 1        |
-      | archives | archives-1 | 2        |
-      | search   | search-1   | 3        |
+      | text     | text-1     | 1        |
+      | search   | search-1   | 2        |
+      | archives | archives-1 | 3        |
       | calendar | calendar-1 | 4        |
-      | text     | text-1     | 5        |
+      | text     | text-2     | 5        |
 
-    When I run `wp widget move text-2 --sidebar-id=wp_inactive_widgets`
+    When I run `wp widget move text-1 --sidebar-id=wp_inactive_widgets`
     Then STDOUT should not be empty
 
     When I run `wp widget deactivate calendar-1`
@@ -51,17 +51,17 @@ Feature: Manage widgets in WordPress sidebar
     When I run `wp widget list sidebar-1 --fields=name,id,position`
     Then STDOUT should be a table containing rows:
       | name     | id         | position |
-      | archives | archives-1 | 1        |
-      | search   | search-1   | 2        |
-      | text     | text-1     | 3        |
+      | search   | search-1   | 1        |
+      | archives | archives-1 | 2        |
+      | text     | text-2     | 3        |
 
     When I run `wp widget list wp_inactive_widgets --fields=name,id,position`
     Then STDOUT should be a table containing rows:
       | name     | id         | position |
-      | calendar | calendar-1 | 1        |
-      | text     | text-2     | 2        |
+      | text     | text-1     | 1        |
+      | calendar | calendar-1 | 2        |
 
-    When I run `wp widget delete archives-1 text-2`
+    When I run `wp widget delete archives-1 text-1`
     Then STDOUT should be:
       """
       Success: Deleted 2 of 2 widgets.
@@ -73,7 +73,7 @@ Feature: Manage widgets in WordPress sidebar
     Then STDOUT should be a table containing rows:
       | name     | id         | position |
       | search   | search-1   | 1        |
-      | text     | text-1     | 2        |
+      | text     | text-2     | 2        |
 
     When I run `wp widget add archives sidebar-1 2 --title="Archives"`
     Then STDOUT should not be empty
@@ -83,12 +83,12 @@ Feature: Manage widgets in WordPress sidebar
       | name     | id         | position |
       | search   | search-1   | 1        |
       | archives | archives-1 | 2        |
-      | text     | text-1     | 3        |
+      | text     | text-2     | 3        |
 
     When I run `wp widget list sidebar-1 --format=ids`
     Then STDOUT should be:
       """
-      search-1 archives-1 text-1
+      search-1 archives-1 text-2
       """
 
     When I run `wp widget list sidebar-1 --fields=name,position,options`
