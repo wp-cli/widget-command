@@ -98,7 +98,6 @@ class Widget_Command extends WP_CLI_Command {
 
 		$formatter = new Formatter( $assoc_args, $this->fields );
 		$formatter->display_items( $output_widgets );
-
 	}
 
 	/**
@@ -165,7 +164,6 @@ class Widget_Command extends WP_CLI_Command {
 		$this->move_sidebar_widget( $widget_id, null, $sidebar_id, null, $position );
 
 		WP_CLI::success( 'Added widget to sidebar.' );
-
 	}
 
 	/**
@@ -206,7 +204,6 @@ class Widget_Command extends WP_CLI_Command {
 		$this->update_widget_options( $name, $widget_options );
 
 		WP_CLI::success( 'Widget updated.' );
-
 	}
 
 	/**
@@ -264,7 +261,6 @@ class Widget_Command extends WP_CLI_Command {
 		$this->move_sidebar_widget( $widget_id, $current_sidebar_id, $new_sidebar_id, $current_sidebar_index, $new_sidebar_index );
 
 		WP_CLI::success( 'Widget moved.' );
-
 	}
 
 	/**
@@ -293,7 +289,7 @@ class Widget_Command extends WP_CLI_Command {
 		foreach ( $args as $widget_id ) {
 			if ( ! $this->validate_sidebar_widget( $widget_id ) ) {
 				WP_CLI::warning( "Widget '{$widget_id}' doesn't exist." );
-				$errors++;
+				++$errors;
 				continue;
 			}
 
@@ -311,7 +307,7 @@ class Widget_Command extends WP_CLI_Command {
 				count( $this->get_sidebar_widgets( 'wp_inactive_widgets' ) )
 			);
 
-			$count++;
+			++$count;
 
 		}
 
@@ -342,7 +338,7 @@ class Widget_Command extends WP_CLI_Command {
 		foreach ( $args as $widget_id ) {
 			if ( ! $this->validate_sidebar_widget( $widget_id ) ) {
 				WP_CLI::warning( "Widget '{$widget_id}' doesn't exist." );
-				$errors++;
+				++$errors;
 				continue;
 			}
 
@@ -358,7 +354,7 @@ class Widget_Command extends WP_CLI_Command {
 			$all_widgets[ $sidebar_id ] = array_values( $all_widgets[ $sidebar_id ] );
 			update_option( 'sidebars_widgets', $all_widgets );
 
-			$count++;
+			++$count;
 		}
 
 		Utils\report_batch_operation_results( 'widget', 'delete', count( $args ), $count, $errors );
@@ -425,7 +421,7 @@ class Widget_Command extends WP_CLI_Command {
 		foreach ( $args as $sidebar_id ) {
 			if ( ! array_key_exists( $sidebar_id, $wp_registered_sidebars ) ) {
 				WP_CLI::warning( sprintf( 'Invalid sidebar: %s', $sidebar_id ) );
-				$errors++;
+				++$errors;
 				continue;
 			}
 
@@ -445,7 +441,7 @@ class Widget_Command extends WP_CLI_Command {
 					);
 				}
 				WP_CLI::log( sprintf( "Sidebar '%s' reset.", $sidebar_id ) );
-				$count++;
+				++$count;
 			}
 		}
 
@@ -627,7 +623,6 @@ class Widget_Command extends WP_CLI_Command {
 		}
 
 		update_option( 'sidebars_widgets', $all_widgets );
-
 	}
 
 	/**
@@ -666,7 +661,5 @@ class Widget_Command extends WP_CLI_Command {
 		// because Widget API dependent on the form fields
 		// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- Whitelisting due to above reason.
 		return @$widget->update( $dirty_options, $old_options );
-
 	}
-
 }

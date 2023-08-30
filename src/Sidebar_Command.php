@@ -84,5 +84,4 @@ class Sidebar_Command extends WP_CLI_Command {
 		$formatter = new Formatter( $assoc_args, $this->fields );
 		$formatter->display_items( $sidebars );
 	}
-
 }
