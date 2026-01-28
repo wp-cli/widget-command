@@ -43,6 +43,22 @@ class Sidebar_Command extends WP_CLI_Command {
 	 *   - count
 	 * ---
 	 *
+	 * ## AVAILABLE FIELDS
+	 *
+	 * These fields will be displayed by default for each sidebar:
+	 *
+	 * * name
+	 * * id
+	 * * description
+	 *
+	 * These fields are optionally available:
+	 *
+	 * * class
+	 * * before_widget
+	 * * after_widget
+	 * * before_title
+	 * * after_title
+	 *
 	 * ## EXAMPLES
 	 *
 	 *     $ wp sidebar list
@@ -107,6 +123,10 @@ class Sidebar_Command extends WP_CLI_Command {
 	public function get( $args, $assoc_args ) {
 		global $wp_registered_sidebars;
 
+		if ( function_exists( 'wp_register_unused_sidebar' ) ) {
+			Utils\wp_register_unused_sidebar();
+		}
+
 		$id = $args[0];
 
 		if ( ! isset( $wp_registered_sidebars[ $id ] ) ) {
@@ -128,12 +148,16 @@ class Sidebar_Command extends WP_CLI_Command {
 	 * ## EXAMPLES
 	 *
 	 *     $ wp sidebar exists sidebar-1
-	 *     $ wp sidebar exists foo && echo "exists"
+	 *     $ wp sidebar exists wp_inactive_widgets && echo "exists"
 	 *
 	 * @when after_wp_load
 	 */
 	public function exists( $args ) {
 		global $wp_registered_sidebars;
+
+		if ( function_exists( 'wp_register_unused_sidebar' ) ) {
+			Utils\wp_register_unused_sidebar();
+		}
 
 		if ( isset( $wp_registered_sidebars[ $args[0] ] ) ) {
 			WP_CLI::halt( 0 );
@@ -172,6 +196,10 @@ class Sidebar_Command extends WP_CLI_Command {
 	public function widgets( $args, $assoc_args ) {
 		global $wp_registered_sidebars;
 
+		if ( function_exists( 'wp_register_unused_sidebar' ) ) {
+			Utils\wp_register_unused_sidebar();
+		}
+
 		$id = $args[0];
 
 		if ( ! isset( $wp_registered_sidebars[ $id ] ) ) {
@@ -179,15 +207,15 @@ class Sidebar_Command extends WP_CLI_Command {
 		}
 
 		$sidebars_widgets = wp_get_sidebars_widgets();
-		$widgets          = isset( $sidebars_widgets[ $id ] ) ? $sidebars_widgets[ $id ] : [];
+		$widget_ids       = isset( $sidebars_widgets[ $id ] ) ? $sidebars_widgets[ $id ] : [];
 
-		if ( empty( $widgets ) ) {
+		if ( empty( $widget_ids ) ) {
 			WP_CLI::warning( "No widgets found in sidebar '{$id}'." );
 			return;
 		}
 
 		if ( isset( $assoc_args['format'] ) && 'ids' === $assoc_args['format'] ) {
-			WP_CLI::line( implode( ' ', $widgets ) );
+			WP_CLI::line( implode( ' ', $widget_ids ) );
 			return;
 		}
 
@@ -195,7 +223,7 @@ class Sidebar_Command extends WP_CLI_Command {
 			function ( $widget_id ) {
 				return [ 'id' => $widget_id ];
 			},
-			$widgets
+			$widget_ids
 		);
 
 		$formatter = new Formatter( $assoc_args, [ 'id' ] );
