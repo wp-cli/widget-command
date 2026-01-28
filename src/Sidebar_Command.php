@@ -76,7 +76,13 @@ class Sidebar_Command extends WP_CLI_Command {
 			Utils\wp_register_unused_sidebar();
 		}
 
-		$sidebars = $wp_registered_sidebars;
+		// Filter out wp_inactive_widgets from the display
+		$sidebars = array_filter(
+			$wp_registered_sidebars,
+			function( $sidebar ) {
+				return 'wp_inactive_widgets' !== $sidebar['id'];
+			}
+		);
 
 		if ( isset( $assoc_args['format'] ) && 'ids' === $assoc_args['format'] ) {
 			WP_CLI::line( implode( ' ', wp_list_pluck( $sidebars, 'id' ) ) );
