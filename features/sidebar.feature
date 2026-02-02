@@ -2,10 +2,20 @@ Feature: Manage WordPress sidebars
 
   Scenario: List available sidebars
     Given a WP install
-
-    When I try `wp theme delete twentytwelve --force`
-    And I run `wp theme install twentytwelve --activate`
-    Then STDOUT should not be empty
+    When I run `wp eval '
+      register_sidebar([
+        "id" => "sidebar-1",
+        "name" => "Main Sidebar"
+      ]);
+      register_sidebar([
+        "id" => "sidebar-2",
+        "name" => "First Front Page Widget Area"
+      ]);
+      register_sidebar([
+        "id" => "sidebar-3",
+        "name" => "Second Front Page Widget Area"
+      ]);
+    '`
 
     When I run `wp sidebar list --fields=name,id`
     Then STDOUT should be a table containing rows:
@@ -29,7 +39,7 @@ Feature: Manage WordPress sidebars
 
   Scenario: Get sidebar details
     Given a WP install
-    When I run `wp theme install twentytwelve --activate`
+    When I run `wp eval 'register_sidebar(["id"=>"sidebar-1","name"=>"Test Sidebar"]);'`
     And I run `wp sidebar get sidebar-1`
     Then STDOUT should contain:
       """
@@ -38,12 +48,19 @@ Feature: Manage WordPress sidebars
 
   Scenario: Sidebar exists command returns success
     Given a WP install
-    When I run `wp theme install twentytwelve --activate`
+    When I run `wp eval 'register_sidebar(["id"=>"sidebar-1","name"=>"Test Sidebar"]);'`
     And I run `wp sidebar exists sidebar-1`
     Then the return code should be 0
 
   Scenario: Sidebar exists command returns failure
     Given a WP install
-    When I run `wp theme install twentytwelve --activate`
-    And I try `wp sidebar exists does-not-exist`
+    When I try `wp sidebar exists does-not-exist`
     Then the return code should be 1
+
+  Scenario: Get non-existing sidebar returns error
+    Given a WP install
+    When I try `wp sidebar get does-not-exist`
+    Then STDERR should contain:
+      """
+      does not exist
+      """
