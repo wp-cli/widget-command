@@ -26,3 +26,24 @@ Feature: Manage WordPress sidebars
       """
       4
       """
+
+  Scenario: Get sidebar details
+    Given a WP install
+    When I run `wp theme install twentytwelve --activate`
+    And I run `wp sidebar get sidebar-1`
+    Then STDOUT should contain:
+      """
+      sidebar-1
+      """
+
+  Scenario: Sidebar exists command returns success
+    Given a WP install
+    When I run `wp theme install twentytwelve --activate`
+    And I run `wp sidebar exists sidebar-1`
+    Then the return code should be 0
+
+  Scenario: Sidebar exists command returns failure
+    Given a WP install
+    When I run `wp theme install twentytwelve --activate`
+    And I try `wp sidebar exists does-not-exist`
+    Then the return code should be 1
