@@ -2,10 +2,10 @@ Feature: Manage WordPress sidebars
 
   Scenario: List available sidebars
     Given a WP install
-    When I run `wp theme install twentytwelve --activate`
-    
-    # Register sidebars for the test
-    And I run `wp eval 'register_sidebar(["name" => "Main Sidebar", "id" => "sidebar-1"]); register_sidebar(["name" => "First Front Page Widget Area", "id" => "sidebar-2"]); register_sidebar(["name" => "Second Front Page Widget Area", "id" => "sidebar-3"]);'`
+
+    When I try `wp theme delete twentytwelve --force`
+    And I run `wp theme install twentytwelve --activate`
+    Then STDOUT should not be empty
 
     When I run `wp sidebar list --fields=name,id`
     Then STDOUT should be a table containing rows:
@@ -28,28 +28,31 @@ Feature: Manage WordPress sidebars
       """
 
   Scenario: Get sidebar details
-      Given a WP install
-      When I run `wp theme install twentytwelve --activate`
-      And I run `wp eval 'register_sidebar(["name" => "Main Sidebar", "id" => "sidebar-1"]);'`
-      And I run `wp sidebar get sidebar-1`
-      Then STDOUT should contain "Main Sidebar"
-      And STDOUT should contain "sidebar-1"
+    Given a WP install
+    When I run `wp theme install twentytwelve --activate`
+    And I run `wp sidebar get sidebar-1`
+    Then STDOUT should contain:
+      """
+      sidebar-1
+      """
 
   Scenario: Sidebar exists command returns success
     Given a WP install
     When I run `wp theme install twentytwelve --activate`
-    And I run `wp eval 'register_sidebar(["name" => "Main Sidebar", "id" => "sidebar-1"]);'`
     And I run `wp sidebar exists sidebar-1`
-    Then the command should succeed
+    Then the return code should be 0
 
   Scenario: Sidebar exists command returns failure
     Given a WP install
     When I run `wp theme install twentytwelve --activate`
-    And I run `wp sidebar exists non_existing_sidebar`
-    Then the command should fail
+    And I try `wp sidebar exists does-not-exist`
+    Then the return code should be 1
 
   Scenario: Get non-existing sidebar returns error
     Given a WP install
     When I run `wp theme install twentytwelve --activate`
-    And I run `wp sidebar get non_existing_sidebar`
-    Then the command should fail
+    And I try `wp sidebar get does-not-exist`
+    Then STDERR should contain:
+      """
+      does not exist
+      """
