@@ -1,9 +1,10 @@
 Feature: Manage WordPress sidebars
-  Scenario: List available sidebars
+  Background:
     Given a WP install
-    When I run `wp theme install twentytwelve`
-    And I run `wp theme activate twentytwelve`
-    Then the return code should be 0
+    And I try `wp theme delete twentytwelve --force`
+    And I run `wp theme install twentytwelve --activate`
+
+  Scenario: List available sidebars
     When I run `wp sidebar list --fields=name,id`
     Then STDOUT should be a table containing rows:
       | name                          | id                  |
@@ -23,10 +24,6 @@ Feature: Manage WordPress sidebars
       """
 
   Scenario: Get sidebar details
-    Given a WP install
-    When I run `wp theme install twentytwelve`
-    And I run `wp theme activate twentytwelve`
-    Then the return code should be 0
     When I run `wp sidebar get sidebar-1`
     Then STDOUT should contain:
       """
@@ -34,26 +31,14 @@ Feature: Manage WordPress sidebars
       """
 
   Scenario: Sidebar exists command returns success
-    Given a WP install
-    When I run `wp theme install twentytwelve`
-    And I run `wp theme activate twentytwelve`
-    Then the return code should be 0
     When I run `wp sidebar exists sidebar-1`
     Then the return code should be 0
 
   Scenario: Sidebar exists command returns failure
-    Given a WP install
-    When I run `wp theme install twentytwelve`
-    And I run `wp theme activate twentytwelve`
-    Then the return code should be 0
     When I try `wp sidebar exists does-not-exist`
     Then the return code should be 1
 
   Scenario: Get non-existing sidebar returns error
-    Given a WP install
-    When I run `wp theme install twentytwelve`
-    And I run `wp theme activate twentytwelve`
-    Then the return code should be 0
     When I try `wp sidebar get does-not-exist`
     Then STDERR should contain:
       """
