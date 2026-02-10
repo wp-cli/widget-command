@@ -102,7 +102,10 @@ class Sidebar_Command extends WP_CLI_Command {
 	 * default: table
 	 * options:
 	 *   - table
+	 *   - csv
 	 *   - json
+	 *   - ids
+	 *   - count
 	 *   - yaml
 	 * ---
 	 *
@@ -120,7 +123,7 @@ class Sidebar_Command extends WP_CLI_Command {
 
 		$id = $args[0];
 
-		if ( ! isset( $wp_registered_sidebars[ $id ] ) ) {
+		if ( ! array_key_exists( $id, $wp_registered_sidebars ) ) {
 			WP_CLI::error( "Sidebar '{$id}' does not exist." );
 		}
 
@@ -148,7 +151,7 @@ class Sidebar_Command extends WP_CLI_Command {
 
 		Utils\wp_register_unused_sidebar();
 
-		if ( isset( $wp_registered_sidebars[ $args[0] ] ) ) {
+		if ( array_key_exists( $args[0], $wp_registered_sidebars ) ) {
 			WP_CLI::halt( 0 );
 		}
 

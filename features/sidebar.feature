@@ -44,3 +44,4 @@ Feature: Manage WordPress sidebars
       """
       does not exist
       """
+    And the return code should be 1
