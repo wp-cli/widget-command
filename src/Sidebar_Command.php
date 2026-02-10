@@ -102,7 +102,10 @@ class Sidebar_Command extends WP_CLI_Command {
 	 * default: table
 	 * options:
 	 *   - table
+	 *   - csv
 	 *   - json
+	 *   - ids
+	 *   - count
 	 *   - yaml
 	 * ---
 	 *
