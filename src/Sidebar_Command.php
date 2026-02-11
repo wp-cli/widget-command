@@ -84,4 +84,77 @@ class Sidebar_Command extends WP_CLI_Command {
 		$formatter = new Formatter( $assoc_args, $this->fields );
 		$formatter->display_items( $sidebars );
 	}
+
+	/**
+	 * Get details about a specific sidebar.
+	 *
+	 * ## OPTIONS
+	 *
+	 * <id>
+	 * : The sidebar ID.
+	 *
+	 * [--fields=<fields>]
+	 * : Limit the output to specific object fields.
+	 *
+	 * [--format=<format>]
+	 * : Render output in a particular format.
+	 * ---
+	 * default: table
+	 * options:
+	 *   - table
+	 *   - csv
+	 *   - json
+	 *   - ids
+	 *   - count
+	 *   - yaml
+	 * ---
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     $ wp sidebar get sidebar-1
+	 *     $ wp sidebar get wp_inactive_widgets --format=json
+	 *
+	 * @when after_wp_load
+	 */
+	public function get( $args, $assoc_args ) {
+		global $wp_registered_sidebars;
+
+		Utils\wp_register_unused_sidebar();
+
+		$id = $args[0];
+
+		if ( ! array_key_exists( $id, $wp_registered_sidebars ) ) {
+			WP_CLI::error( "Sidebar '{$id}' does not exist." );
+		}
+
+		$formatter = new Formatter( $assoc_args, $this->fields );
+		$formatter->display_item( $wp_registered_sidebars[ $id ] );
+	}
+
+	/**
+	 * Check if a sidebar exists.
+	 *
+	 * ## OPTIONS
+	 *
+	 * <id>
+	 * : The sidebar ID.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     $ wp sidebar exists sidebar-1
+	 *     $ wp sidebar exists wp_inactive_widgets && echo "exists"
+	 *
+	 * @when after_wp_load
+	 */
+	public function exists( $args ) {
+		global $wp_registered_sidebars;
+
+		Utils\wp_register_unused_sidebar();
+
+		if ( array_key_exists( $args[0], $wp_registered_sidebars ) ) {
+			WP_CLI::halt( 0 );
+		}
+
+		WP_CLI::halt( 1 );
+	}
 }
