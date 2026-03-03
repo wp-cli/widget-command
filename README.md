@@ -287,6 +287,62 @@ A [sidebar](https://developer.wordpress.org/themes/functionality/sidebars/) is a
 
 
 
+### wp sidebar exists
+
+Check if a sidebar exists.
+
+~~~
+wp sidebar exists <id>
+~~~
+
+**OPTIONS**
+
+	<id>
+		The sidebar ID.
+
+**EXAMPLES**
+
+    $ wp sidebar exists sidebar-1
+    $ wp sidebar exists wp_inactive_widgets && echo "exists"
+
+
+
+### wp sidebar get
+
+Get details about a specific sidebar.
+
+~~~
+wp sidebar get <id> [--fields=<fields>] [--format=<format>]
+~~~
+
+**OPTIONS**
+
+	<id>
+		The sidebar ID.
+
+	[--fields=<fields>]
+		Limit the output to specific object fields.
+
+	[--format=<format>]
+		Render output in a particular format.
+		---
+		default: table
+		options:
+		  - table
+		  - csv
+		  - json
+		  - ids
+		  - count
+		  - yaml
+		---
+
+**EXAMPLES**
+
+    $ wp sidebar get sidebar-1
+    $ wp sidebar get wp_inactive_widgets --format=json
+
+
+
 ### wp sidebar list
 
 Lists registered sidebars.

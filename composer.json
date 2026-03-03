@@ -43,6 +43,8 @@
             "widget reset",
             "widget update",
             "sidebar",
+            "sidebar exists",
+            "sidebar get",
             "sidebar list"
         ]
     },
