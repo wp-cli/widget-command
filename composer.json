@@ -40,6 +40,7 @@
             "widget delete",
             "widget list",
             "widget move",
+            "widget patch",
             "widget reset",
             "widget update",
             "sidebar",

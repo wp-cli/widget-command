@@ -103,6 +103,50 @@ Feature: Manage widgets in WordPress sidebar
       | name     | position | options                                         |
       | archives | 2        | {"title":"New Archives","count":0,"dropdown":0} |
 
+  Scenario: Patch widget options
+    When I run `wp widget patch update archives-1 title "Patched Archives"`
+    Then STDOUT should be:
+      """
+      Success: Widget updated.
+      """
+    And STDERR should be empty
+    And the return code should be 0
+
+    When I run `wp widget list sidebar-1 --fields=name,position,options`
+    Then STDOUT should be a table containing rows:
+      | name     | position | options                                          |
+      | archives | 2        | {"title":"Patched Archives","count":0,"dropdown":0} |
+
+    When I run `wp widget patch insert archives-1 new_key "inserted value"`
+    Then STDOUT should be:
+      """
+      Success: Widget updated.
+      """
+    And STDERR should be empty
+    And the return code should be 0
+
+    When I run `wp widget patch delete archives-1 new_key`
+    Then STDOUT should be:
+      """
+      Success: Widget updated.
+      """
+    And STDERR should be empty
+    And the return code should be 0
+
+    When I try `wp widget patch update calendar-999 title "Nope"`
+    Then STDERR should be:
+      """
+      Error: Widget doesn't exist.
+      """
+    And the return code should be 1
+
+    When I try `wp widget patch update archives-1 title`
+    Then STDERR should be:
+      """
+      Error: Please provide value to update.
+      """
+    And the return code should be 1
+
   Scenario: Validate sidebar widgets
     When I try `wp widget update calendar-999`
     Then STDERR should be:
