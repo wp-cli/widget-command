@@ -288,7 +288,7 @@ class Widget_Command extends WP_CLI_Command {
 			}
 
 			if ( null === $patch_value ) {
-				WP_CLI::error( 'Please provide value to update.' );
+				WP_CLI::error( "Please provide a value to {$action}." );
 			}
 		}
 
