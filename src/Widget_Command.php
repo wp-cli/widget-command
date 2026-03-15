@@ -279,8 +279,8 @@ class Widget_Command extends WP_CLI_Command {
 				? trim( WP_CLI::get_value_from_arg_or_stdin( $args, -1 ) )
 				: null;
 
-			if ( ! empty( $stdin_value ) ) {
-				$patch_value = WP_CLI::read_value( $stdin_value, $assoc_args );
+			if ( null !== $stdin_value && '' !== $stdin_value ) {
+				$patch_value = WP_CCLI::read_value( $stdin_value, $assoc_args );
 			} elseif ( count( $key_path ) > 1 ) {
 				$patch_value = WP_CLI::read_value( array_pop( $key_path ), $assoc_args );
 			} else {
