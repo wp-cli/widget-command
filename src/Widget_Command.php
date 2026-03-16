@@ -280,7 +280,7 @@ class Widget_Command extends WP_CLI_Command {
 				: null;
 
 			if ( null !== $stdin_value && '' !== $stdin_value ) {
-				$patch_value = WP_CCLI::read_value( $stdin_value, $assoc_args );
+				$patch_value = WP_CLI::read_value( $stdin_value, $assoc_args );
 			} elseif ( count( $key_path ) > 1 ) {
 				$patch_value = WP_CLI::read_value( array_pop( $key_path ), $assoc_args );
 			} else {
