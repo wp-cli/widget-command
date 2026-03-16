@@ -206,6 +206,59 @@ new sidebar.
 
 
 
+### wp widget patch
+
+Updates a nested value in a widget's options.
+
+~~~
+wp widget patch <action> <widget-id> <key-path>... [<value>] [--format=<format>]
+~~~
+
+**OPTIONS**
+
+	<action>
+		Patch action to perform.
+		---
+		options:
+		  - insert
+		  - update
+		  - delete
+		---
+
+	<widget-id>
+		Unique ID for the widget.
+
+	<key-path>...
+		The name(s) of the keys within the value to locate the value to patch.
+
+	[<value>]
+		The new value. If omitted, the value is read from STDIN.
+
+	[--format=<format>]
+		The serialization format for the value.
+		---
+		default: plaintext
+		options:
+		  - plaintext
+		  - json
+		---
+
+**EXAMPLES**
+
+    # Update a nested value in the options of the archives-1 widget
+    $ wp widget patch update archives-1 title "My Archives"
+    Success: Widget updated.
+
+    # Insert a new nested value into the options of the archives-1 widget
+    $ wp widget patch insert archives-1 new_key "New Value"
+    Success: Widget updated.
+
+    # Delete a nested value from the options of the archives-1 widget
+    $ wp widget patch delete archives-1 title
+    Success: Widget updated.
+
+
+
 ### wp widget reset
 
 Resets sidebar.
