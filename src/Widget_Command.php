@@ -1,7 +1,8 @@
 <?php
 
-use WP_CLI\Utils;
 use WP_CLI\Formatter;
+use WP_CLI\Traverser\RecursiveDataStructureTraverser;
+use WP_CLI\Utils;
 
 /**
  * Manages widgets, including adding and moving them within sidebars.
@@ -201,6 +202,110 @@ class Widget_Command extends WP_CLI_Command {
 		$widget_options                  = $this->get_widget_options( $name );
 		$clean_options                   = $this->sanitize_widget_options( $name, $assoc_args, $widget_options[ $option_index ] );
 		$widget_options[ $option_index ] = array_merge( (array) $widget_options[ $option_index ], $clean_options );
+		$this->update_widget_options( $name, $widget_options );
+
+		WP_CLI::success( 'Widget updated.' );
+	}
+
+	/**
+	 * Updates a nested value in a widget's options.
+	 *
+	 * ## OPTIONS
+	 *
+	 * <action>
+	 * : Patch action to perform.
+	 * ---
+	 * options:
+	 *   - insert
+	 *   - update
+	 *   - delete
+	 * ---
+	 *
+	 * <widget-id>
+	 * : Unique ID for the widget.
+	 *
+	 * <key-path>...
+	 * : The name(s) of the keys within the value to locate the value to patch.
+	 *
+	 * [<value>]
+	 * : The new value. If omitted, the value is read from STDIN.
+	 *
+	 * [--format=<format>]
+	 * : The serialization format for the value.
+	 * ---
+	 * default: plaintext
+	 * options:
+	 *   - plaintext
+	 *   - json
+	 * ---
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     # Update a nested value in the options of the archives-1 widget
+	 *     $ wp widget patch update archives-1 title "My Archives"
+	 *     Success: Widget updated.
+	 *
+	 *     # Insert a new nested value into the options of the archives-1 widget
+	 *     $ wp widget patch insert archives-1 new_key "New Value"
+	 *     Success: Widget updated.
+	 *
+	 *     # Delete a nested value from the options of the archives-1 widget
+	 *     $ wp widget patch delete archives-1 title
+	 *     Success: Widget updated.
+	 *
+	 * @subcommand patch
+	 */
+	public function patch( $args, $assoc_args ) {
+		list( $action, $widget_id ) = $args;
+
+		if ( ! $this->validate_sidebar_widget( $widget_id ) ) {
+			WP_CLI::error( "Widget doesn't exist." );
+		}
+
+		$key_path = array_map(
+			function ( $key ) {
+				if ( is_numeric( $key ) && ( (string) intval( $key ) === $key ) ) {
+					return (int) $key;
+				}
+				return $key;
+			},
+			array_slice( $args, 2 )
+		);
+
+		if ( 'delete' === $action ) {
+			$patch_value = null;
+		} else {
+			$stdin_value = Utils\has_stdin()
+				? trim( WP_CLI::get_value_from_arg_or_stdin( $args, -1 ) )
+				: null;
+
+			if ( null !== $stdin_value && '' !== $stdin_value ) {
+				$patch_value = WP_CLI::read_value( $stdin_value, $assoc_args );
+			} elseif ( count( $key_path ) > 1 ) {
+				$patch_value = WP_CLI::read_value( array_pop( $key_path ), $assoc_args );
+			} else {
+				$patch_value = null;
+			}
+
+			if ( null === $patch_value ) {
+				WP_CLI::error( "Please provide a value to {$action}." );
+			}
+		}
+
+		list( $name, $option_index ) = $this->get_widget_data( $widget_id );
+
+		$widget_options   = $this->get_widget_options( $name );
+		$instance_options = isset( $widget_options[ $option_index ] ) ? $widget_options[ $option_index ] : array();
+
+		$traverser = new RecursiveDataStructureTraverser( $instance_options );
+
+		try {
+			$traverser->$action( $key_path, $patch_value );
+		} catch ( Exception $exception ) {
+			WP_CLI::error( $exception->getMessage() );
+		}
+
+		$widget_options[ $option_index ] = $traverser->value();
 		$this->update_widget_options( $name, $widget_options );
 
 		WP_CLI::success( 'Widget updated.' );
