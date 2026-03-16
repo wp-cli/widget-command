@@ -134,10 +134,7 @@ Feature: Manage widgets in WordPress sidebar
     And the return code should be 0
 
     # Read value to update from STDIN (edge case: "0")
-    When I run `wp widget patch update archives-1 title` with:
-      """
-      0
-      """
+    When I run `echo '0' | wp widget patch update archives-1 title`
     Then STDOUT should be:
       """
       Success: Widget updated.
@@ -146,10 +143,7 @@ Feature: Manage widgets in WordPress sidebar
     And the return code should be 0
 
     # Read JSON value from STDIN with --format=json (edge case: null)
-    When I run `wp widget patch update archives-1 title --format=json` with:
-      """
-      null
-      """
+    When I run `echo 'null' | wp widget patch update archives-1 title --format=json`
     Then STDOUT should be:
       """
       Success: Widget updated.
