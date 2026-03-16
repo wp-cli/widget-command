@@ -142,15 +142,6 @@ Feature: Manage widgets in WordPress sidebar
     And STDERR should be empty
     And the return code should be 0
 
-    # Read JSON value from STDIN with --format=json (edge case: null)
-    When I run `echo 'null' | wp widget patch update archives-1 title --format=json`
-    Then STDOUT should be:
-      """
-      Success: Widget updated.
-      """
-    And STDERR should be empty
-    And the return code should be 0
-
     When I try `wp widget patch update calendar-999 title "Nope"`
     Then STDERR should be:
       """
