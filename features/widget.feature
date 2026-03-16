@@ -133,6 +133,30 @@ Feature: Manage widgets in WordPress sidebar
     And STDERR should be empty
     And the return code should be 0
 
+    # Read value to update from STDIN (edge case: "0")
+    When I run `wp widget patch update archives-1 title` with:
+      """
+      0
+      """
+    Then STDOUT should be:
+      """
+      Success: Widget updated.
+      """
+    And STDERR should be empty
+    And the return code should be 0
+
+    # Read JSON value from STDIN with --format=json (edge case: null)
+    When I run `wp widget patch update archives-1 title --format=json` with:
+      """
+      null
+      """
+    Then STDOUT should be:
+      """
+      Success: Widget updated.
+      """
+    And STDERR should be empty
+    And the return code should be 0
+
     When I try `wp widget patch update calendar-999 title "Nope"`
     Then STDERR should be:
       """
@@ -143,7 +167,7 @@ Feature: Manage widgets in WordPress sidebar
     When I try `wp widget patch update archives-1 title`
     Then STDERR should be:
       """
-      Error: Please provide value to update.
+      Error: Please provide a value to update.
       """
     And the return code should be 1
 
