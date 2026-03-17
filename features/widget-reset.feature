@@ -168,7 +168,7 @@ Feature: Reset WordPress sidebars
     # Simulate an inactive (unregistered) sidebar by moving widget data to an orphaned key
     When I run `wp eval '$w = wp_get_sidebars_widgets(); $w["orphaned-sidebar-1"] = $w["sidebar-1"]; $w["sidebar-1"] = []; update_option( "sidebars_widgets", $w );'`
 
-    When I run `wp sidebar list --inactive --fields=id --format=ids`
+    And I run `wp sidebar list --inactive --fields=id --format=ids`
     Then STDOUT should be:
       """
       orphaned-sidebar-1
