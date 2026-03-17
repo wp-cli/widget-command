@@ -86,7 +86,10 @@ class Sidebar_Command extends WP_CLI_Command {
 
 		if ( $inactive ) {
 			$sidebars_widgets = get_option( 'sidebars_widgets', [] );
-			if ( is_array( $sidebars_widgets ) && isset( $sidebars_widgets['array_version'] ) ) {
+			if ( ! is_array( $sidebars_widgets ) ) {
+				$sidebars_widgets = [];
+			}
+			if ( isset( $sidebars_widgets['array_version'] ) ) {
 				unset( $sidebars_widgets['array_version'] );
 			}
 			$registered_ids       = array_keys( $wp_registered_sidebars );

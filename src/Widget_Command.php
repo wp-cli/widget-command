@@ -485,22 +485,22 @@ class Widget_Command extends WP_CLI_Command {
 	 *
 	 *     # Reset a sidebar
 	 *     $ wp widget reset sidebar-1
-	 *     Success: Sidebar 'sidebar-1' reset.
+	 *     Sidebar 'sidebar-1' reset.
 	 *
 	 *     # Reset multiple sidebars
 	 *     $ wp widget reset sidebar-1 sidebar-2
-	 *     Success: Sidebar 'sidebar-1' reset.
-	 *     Success: Sidebar 'sidebar-2' reset.
+	 *     Sidebar 'sidebar-1' reset.
+	 *     Sidebar 'sidebar-2' reset.
 	 *
 	 *     # Reset all sidebars
 	 *     $ wp widget reset --all
-	 *     Success: Sidebar 'sidebar-1' reset.
-	 *     Success: Sidebar 'sidebar-2' reset.
-	 *     Success: Sidebar 'sidebar-3' reset.
+	 *     Sidebar 'sidebar-1' reset.
+	 *     Sidebar 'sidebar-2' reset.
+	 *     Sidebar 'sidebar-3' reset.
 	 *
 	 *     # Reset all inactive sidebars
 	 *     $ wp widget reset --inactive
-	 *     Success: Sidebar 'old-sidebar-1' reset.
+	 *     Sidebar 'old-sidebar-1' reset.
 	 */
 	public function reset( $args, $assoc_args ) {
 
@@ -512,6 +512,11 @@ class Widget_Command extends WP_CLI_Command {
 		// Bail if no arguments and no --all or --inactive flag.
 		if ( ! $all && ! $inactive && empty( $args ) ) {
 			WP_CLI::error( 'Please specify one or more sidebars, or use --all or --inactive.' );
+		}
+
+		// Explicitly handle reserved sidebar ID for inactive widgets.
+		if ( in_array( 'wp_inactive_widgets', $args, true ) ) {
+			WP_CLI::error( "Sidebar 'wp_inactive_widgets' is reserved for inactive widgets. Use the --inactive flag instead." );
 		}
 
 		// Fetch all registered sidebars if --all flag is set.
@@ -536,6 +541,7 @@ class Widget_Command extends WP_CLI_Command {
 		}
 
 		$all_args = array_merge( $args, $inactive_args );
+		$all_args = array_values( array_unique( $all_args ) );
 
 		// Check if there are no sidebars to reset.
 		if ( empty( $all_args ) ) {
@@ -587,7 +593,13 @@ class Widget_Command extends WP_CLI_Command {
 	private function get_inactive_sidebar_ids() {
 		global $wp_registered_sidebars;
 
-		$all_sidebar_ids = array_keys( $this->wp_get_sidebars_widgets() );
+		$sidebars_widgets = $this->wp_get_sidebars_widgets();
+
+		if ( ! is_array( $sidebars_widgets ) ) {
+			$sidebars_widgets = [];
+		}
+
+		$all_sidebar_ids = array_keys( $sidebars_widgets );
 		$registered_ids  = array_keys( $wp_registered_sidebars );
 
 		return array_values(
