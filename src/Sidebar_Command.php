@@ -29,6 +29,9 @@ class Sidebar_Command extends WP_CLI_Command {
 	 *
 	 * ## OPTIONS
 	 *
+	 * [--inactive]
+	 * : If set, only inactive sidebars will be listed.
+	 *
 	 * [--fields=<fields>]
 	 * : Limit the output to specific object fields.
 	 *
@@ -68,6 +71,10 @@ class Sidebar_Command extends WP_CLI_Command {
 	 *     "Widget Area",sidebar-1
 	 *     "Inactive Widgets",wp_inactive_widgets
 	 *
+	 *     $ wp sidebar list --inactive --fields=id --format=csv
+	 *     id
+	 *     old-sidebar-1
+	 *
 	 * @subcommand list
 	 */
 	public function list_( $args, $assoc_args ) {
@@ -75,10 +82,41 @@ class Sidebar_Command extends WP_CLI_Command {
 
 		Utils\wp_register_unused_sidebar();
 
-		if ( ! empty( $assoc_args['format'] ) && 'ids' === $assoc_args['format'] ) {
-			$sidebars = wp_list_pluck( $wp_registered_sidebars, 'id' );
+		$inactive = Utils\get_flag_value( $assoc_args, 'inactive', false );
+
+		if ( $inactive ) {
+			$sidebars_widgets = get_option( 'sidebars_widgets', [] );
+			if ( is_array( $sidebars_widgets ) && isset( $sidebars_widgets['array_version'] ) ) {
+				unset( $sidebars_widgets['array_version'] );
+			}
+			$registered_ids       = array_keys( $wp_registered_sidebars );
+			$inactive_sidebar_ids = array_values(
+				array_filter(
+					array_diff( array_keys( $sidebars_widgets ), $registered_ids ),
+					static function ( $id ) {
+						return 'wp_inactive_widgets' !== $id;
+					}
+				)
+			);
+			$sidebars             = [];
+			foreach ( $inactive_sidebar_ids as $sidebar_id ) {
+				$sidebars[ $sidebar_id ] = [
+					'name'          => $sidebar_id,
+					'id'            => $sidebar_id,
+					'description'   => '',
+					'class'         => '',
+					'before_widget' => '',
+					'after_widget'  => '',
+					'before_title'  => '',
+					'after_title'   => '',
+				];
+			}
 		} else {
 			$sidebars = $wp_registered_sidebars;
+		}
+
+		if ( ! empty( $assoc_args['format'] ) && 'ids' === $assoc_args['format'] ) {
+			$sidebars = wp_list_pluck( $sidebars, 'id' );
 		}
 
 		$formatter = new Formatter( $assoc_args, $this->fields );

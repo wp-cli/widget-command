@@ -24,7 +24,7 @@ Feature: Reset WordPress sidebars
     When I try `wp widget reset`
     Then STDERR should be:
       """
-      Error: Please specify one or more sidebars, or use --all.
+      Error: Please specify one or more sidebars, or use --all or --inactive.
       """
 
     When I try `wp widget reset sidebar-1`
@@ -152,4 +152,38 @@ Feature: Reset WordPress sidebars
     And STDOUT should contain:
       """
       calendar-1 search-1
+      """
+
+  Scenario: Reset inactive sidebars
+    When I try `wp widget reset --inactive`
+    Then STDERR should be:
+      """
+      Error: No inactive sidebars found.
+      """
+    And the return code should be 1
+
+    When I run `wp widget add calendar sidebar-1 --title="Calendar"`
+    Then STDOUT should not be empty
+
+    # Simulate an inactive (unregistered) sidebar by moving widget data to an orphaned key
+    When I run `wp eval '$w = wp_get_sidebars_widgets(); $w["orphaned-sidebar-1"] = $w["sidebar-1"]; $w["sidebar-1"] = []; update_option( "sidebars_widgets", $w );'`
+
+    When I run `wp sidebar list --inactive --fields=id --format=ids`
+    Then STDOUT should be:
+      """
+      orphaned-sidebar-1
+      """
+
+    When I run `wp widget reset --inactive`
+    Then STDOUT should be:
+      """
+      Sidebar 'orphaned-sidebar-1' reset.
+      Success: Reset 1 of 1 sidebars.
+      """
+    And the return code should be 0
+
+    When I run `wp widget list wp_inactive_widgets --format=ids`
+    Then STDOUT should contain:
+      """
+      calendar-1
       """
