@@ -264,7 +264,7 @@ wp widget patch <action> <widget-id> <key-path>... [<value>] [--format=<format>]
 Resets sidebar.
 
 ~~~
-wp widget reset [<sidebar-id>...] [--all]
+wp widget reset [<sidebar-id>...] [--all] [--inactive]
 ~~~
 
 Removes all widgets from the sidebar and places them in Inactive Widgets.
@@ -277,22 +277,29 @@ Removes all widgets from the sidebar and places them in Inactive Widgets.
 	[--all]
 		If set, all sidebars will be reset.
 
+	[--inactive]
+		If set, all inactive sidebars will also be reset, in addition to any sidebars specified via <sidebar-id>... or selected with --all.
+
 **EXAMPLES**
 
     # Reset a sidebar
     $ wp widget reset sidebar-1
-    Success: Sidebar 'sidebar-1' reset.
+    Sidebar 'sidebar-1' reset.
 
     # Reset multiple sidebars
     $ wp widget reset sidebar-1 sidebar-2
-    Success: Sidebar 'sidebar-1' reset.
-    Success: Sidebar 'sidebar-2' reset.
+    Sidebar 'sidebar-1' reset.
+    Sidebar 'sidebar-2' reset.
 
     # Reset all sidebars
     $ wp widget reset --all
-    Success: Sidebar 'sidebar-1' reset.
-    Success: Sidebar 'sidebar-2' reset.
-    Success: Sidebar 'sidebar-3' reset.
+    Sidebar 'sidebar-1' reset.
+    Sidebar 'sidebar-2' reset.
+    Sidebar 'sidebar-3' reset.
+
+    # Reset all inactive sidebars
+    $ wp widget reset --inactive
+    Sidebar 'old-sidebar-1' reset.
 
 
 
@@ -401,10 +408,13 @@ wp sidebar get <id> [--fields=<fields>] [--format=<format>]
 Lists registered sidebars.
 
 ~~~
-wp sidebar list [--fields=<fields>] [--format=<format>]
+wp sidebar list [--inactive] [--fields=<fields>] [--format=<format>]
 ~~~
 
 **OPTIONS**
+
+	[--inactive]
+		If set, only inactive sidebars will be listed.
 
 	[--fields=<fields>]
 		Limit the output to specific object fields.
@@ -444,6 +454,10 @@ These fields are optionally available:
     name,id
     "Widget Area",sidebar-1
     "Inactive Widgets",wp_inactive_widgets
+
+    $ wp sidebar list --inactive --fields=id --format=csv
+    id
+    old-sidebar-1
 
 ## Installing
 
