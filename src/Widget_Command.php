@@ -479,7 +479,7 @@ class Widget_Command extends WP_CLI_Command {
 	 * : If set, all sidebars will be reset.
 	 *
 	 * [--inactive]
-	 * : If set, only inactive sidebars will be reset.
+	 * : If set, all inactive sidebars will also be reset, in addition to any sidebars specified via <sidebar-id>... or selected with --all.
 	 *
 	 * ## EXAMPLES
 	 *
@@ -516,7 +516,7 @@ class Widget_Command extends WP_CLI_Command {
 
 		// Explicitly handle reserved sidebar ID for inactive widgets.
 		if ( in_array( 'wp_inactive_widgets', $args, true ) ) {
-			WP_CLI::error( "Sidebar 'wp_inactive_widgets' is reserved for inactive widgets. Use the --inactive flag instead." );
+			WP_CLI::error( "Sidebar 'wp_inactive_widgets' is reserved for inactive widgets and cannot be reset with this command. The --inactive flag only targets widgets from orphaned or unregistered sidebars, not 'wp_inactive_widgets' itself." );
 		}
 
 		// Fetch all registered sidebars if --all flag is set.
