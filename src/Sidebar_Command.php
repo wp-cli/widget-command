@@ -85,24 +85,8 @@ class Sidebar_Command extends WP_CLI_Command {
 		$inactive = Utils\get_flag_value( $assoc_args, 'inactive', false );
 
 		if ( $inactive ) {
-			$sidebars_widgets = get_option( 'sidebars_widgets', [] );
-			if ( ! is_array( $sidebars_widgets ) ) {
-				$sidebars_widgets = [];
-			}
-			if ( isset( $sidebars_widgets['array_version'] ) ) {
-				unset( $sidebars_widgets['array_version'] );
-			}
-			$registered_ids       = array_keys( $wp_registered_sidebars );
-			$inactive_sidebar_ids = array_values(
-				array_filter(
-					array_diff( array_keys( $sidebars_widgets ), $registered_ids ),
-					static function ( $id ) {
-						return 'wp_inactive_widgets' !== $id;
-					}
-				)
-			);
-			$sidebars             = [];
-			foreach ( $inactive_sidebar_ids as $sidebar_id ) {
+			$sidebars = [];
+			foreach ( self::get_inactive_sidebar_ids() as $sidebar_id ) {
 				$sidebars[ $sidebar_id ] = [
 					'name'          => $sidebar_id,
 					'id'            => $sidebar_id,
@@ -124,6 +108,34 @@ class Sidebar_Command extends WP_CLI_Command {
 
 		$formatter = new Formatter( $assoc_args, $this->fields );
 		$formatter->display_items( $sidebars );
+	}
+
+	/**
+	 * Returns the IDs of sidebars that exist in the database but are not currently registered.
+	 *
+	 * @return string[]
+	 */
+	public static function get_inactive_sidebar_ids() {
+		global $wp_registered_sidebars;
+
+		$sidebars_widgets = get_option( 'sidebars_widgets', [] );
+		if ( ! is_array( $sidebars_widgets ) ) {
+			$sidebars_widgets = [];
+		}
+		if ( isset( $sidebars_widgets['array_version'] ) ) {
+			unset( $sidebars_widgets['array_version'] );
+		}
+
+		$registered_ids = array_keys( $wp_registered_sidebars );
+
+		return array_values(
+			array_filter(
+				array_diff( array_keys( $sidebars_widgets ), $registered_ids ),
+				static function ( $id ) {
+					return 'wp_inactive_widgets' !== $id;
+				}
+			)
+		);
 	}
 
 	/**

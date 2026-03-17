@@ -537,7 +537,7 @@ class Widget_Command extends WP_CLI_Command {
 		// Collect inactive (unregistered) sidebar IDs if --inactive flag is set.
 		$inactive_args = [];
 		if ( $inactive ) {
-			$inactive_args = $this->get_inactive_sidebar_ids();
+			$inactive_args = Sidebar_Command::get_inactive_sidebar_ids();
 		}
 
 		$all_args = array_merge( $args, $inactive_args );
@@ -583,33 +583,6 @@ class Widget_Command extends WP_CLI_Command {
 		}
 
 		Utils\report_batch_operation_results( 'sidebar', 'reset', count( $all_args ), $count, $errors );
-	}
-
-	/**
-	 * Returns the IDs of sidebars that exist in the database but are not currently registered.
-	 *
-	 * @return string[]
-	 */
-	private function get_inactive_sidebar_ids() {
-		global $wp_registered_sidebars;
-
-		$sidebars_widgets = $this->wp_get_sidebars_widgets();
-
-		if ( ! is_array( $sidebars_widgets ) ) {
-			$sidebars_widgets = [];
-		}
-
-		$all_sidebar_ids = array_keys( $sidebars_widgets );
-		$registered_ids  = array_keys( $wp_registered_sidebars );
-
-		return array_values(
-			array_filter(
-				array_diff( $all_sidebar_ids, $registered_ids ),
-				static function ( $id ) {
-					return 'wp_inactive_widgets' !== $id;
-				}
-			)
-		);
 	}
 
 	/**
