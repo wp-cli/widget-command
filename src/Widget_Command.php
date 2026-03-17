@@ -478,53 +478,85 @@ class Widget_Command extends WP_CLI_Command {
 	 * [--all]
 	 * : If set, all sidebars will be reset.
 	 *
+	 * [--inactive]
+	 * : If set, all inactive sidebars will also be reset, in addition to any sidebars specified via <sidebar-id>... or selected with --all.
+	 *
 	 * ## EXAMPLES
 	 *
 	 *     # Reset a sidebar
 	 *     $ wp widget reset sidebar-1
-	 *     Success: Sidebar 'sidebar-1' reset.
+	 *     Sidebar 'sidebar-1' reset.
 	 *
 	 *     # Reset multiple sidebars
 	 *     $ wp widget reset sidebar-1 sidebar-2
-	 *     Success: Sidebar 'sidebar-1' reset.
-	 *     Success: Sidebar 'sidebar-2' reset.
+	 *     Sidebar 'sidebar-1' reset.
+	 *     Sidebar 'sidebar-2' reset.
 	 *
 	 *     # Reset all sidebars
 	 *     $ wp widget reset --all
-	 *     Success: Sidebar 'sidebar-1' reset.
-	 *     Success: Sidebar 'sidebar-2' reset.
-	 *     Success: Sidebar 'sidebar-3' reset.
+	 *     Sidebar 'sidebar-1' reset.
+	 *     Sidebar 'sidebar-2' reset.
+	 *     Sidebar 'sidebar-3' reset.
+	 *
+	 *     # Reset all inactive sidebars
+	 *     $ wp widget reset --inactive
+	 *     Sidebar 'old-sidebar-1' reset.
 	 */
 	public function reset( $args, $assoc_args ) {
 
 		global $wp_registered_sidebars;
 
-		$all = Utils\get_flag_value( $assoc_args, 'all', false );
+		$all      = Utils\get_flag_value( $assoc_args, 'all', false );
+		$inactive = Utils\get_flag_value( $assoc_args, 'inactive', false );
 
-		// Bail if no arguments and no all flag.
-		if ( ! $all && empty( $args ) ) {
-			WP_CLI::error( 'Please specify one or more sidebars, or use --all.' );
+		// Bail if no arguments and no --all or --inactive flag.
+		if ( ! $all && ! $inactive && empty( $args ) ) {
+			WP_CLI::error( 'Please specify one or more sidebars, or use --all or --inactive.' );
 		}
 
-		// Fetch all sidebars if all flag is set.
+		// Explicitly handle reserved sidebar ID for inactive widgets.
+		if ( in_array( 'wp_inactive_widgets', $args, true ) ) {
+			WP_CLI::error( "Sidebar 'wp_inactive_widgets' is reserved for inactive widgets and cannot be reset with this command. The --inactive flag only targets widgets from orphaned or unregistered sidebars, not 'wp_inactive_widgets' itself." );
+		}
+
+		// Fetch all registered sidebars if --all flag is set.
 		if ( $all ) {
 			$args = array_keys( $wp_registered_sidebars );
 		}
 
 		// Sidebar ID wp_inactive_widgets is reserved by WP core for inactive widgets.
-		if ( isset( $args['wp_inactive_widgets'] ) ) {
-			unset( $args['wp_inactive_widgets'] );
+		$args = array_values(
+			array_filter(
+				$args,
+				static function ( $id ) {
+					return 'wp_inactive_widgets' !== $id;
+				}
+			)
+		);
+
+		// Collect inactive (unregistered) sidebar IDs if --inactive flag is set.
+		$inactive_args = [];
+		if ( $inactive ) {
+			$inactive_args = Sidebar_Command::get_inactive_sidebar_ids();
 		}
 
-		// Check if no registered sidebar.
-		if ( empty( $args ) ) {
+		$all_args = array_merge( $args, $inactive_args );
+		$all_args = array_values( array_unique( $all_args ) );
+
+		// Check if there are no sidebars to reset.
+		if ( empty( $all_args ) ) {
+			if ( $inactive && empty( $inactive_args ) ) {
+				WP_CLI::error( 'No inactive sidebars found.' );
+			}
 			WP_CLI::error( 'No sidebar registered.' );
 		}
 
 		$count  = 0;
 		$errors = 0;
-		foreach ( $args as $sidebar_id ) {
-			if ( ! array_key_exists( $sidebar_id, $wp_registered_sidebars ) ) {
+		foreach ( $all_args as $sidebar_id ) {
+			// Skip registration validation for sidebars resolved via --inactive.
+			if ( ! in_array( $sidebar_id, $inactive_args, true ) &&
+				! array_key_exists( $sidebar_id, $wp_registered_sidebars ) ) {
 				WP_CLI::warning( sprintf( 'Invalid sidebar: %s', $sidebar_id ) );
 				++$errors;
 				continue;
@@ -550,7 +582,7 @@ class Widget_Command extends WP_CLI_Command {
 			}
 		}
 
-		Utils\report_batch_operation_results( 'sidebar', 'reset', count( $args ), $count, $errors );
+		Utils\report_batch_operation_results( 'sidebar', 'reset', count( $all_args ), $count, $errors );
 	}
 
 	/**

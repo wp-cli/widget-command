@@ -23,6 +23,27 @@ Feature: Manage WordPress sidebars
       4
       """
 
+  Scenario: List inactive sidebars
+    When I run `wp sidebar list --inactive --format=count`
+    Then STDOUT should be:
+      """
+      0
+      """
+
+    When I run `wp eval 'update_option( "sidebars_widgets", array_merge( wp_get_sidebars_widgets(), [ "orphaned-sidebar-1" => [] ] ) );'`
+    And I run `wp sidebar list --inactive --fields=id --format=csv`
+    Then STDOUT should be:
+      """
+      id
+      orphaned-sidebar-1
+      """
+
+    When I run `wp sidebar list --fields=id --format=ids`
+    Then STDOUT should not contain:
+      """
+      orphaned-sidebar-1
+      """
+
   Scenario: Get sidebar details
     When I run `wp sidebar get sidebar-1`
     Then STDOUT should contain:
