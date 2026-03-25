@@ -34,6 +34,9 @@ use WP_CLI\Utils;
  */
 class Widget_Command extends WP_CLI_Command {
 
+	/**
+	 * @var string[]
+	 */
 	private $fields = [
 		'name',
 		'id',
@@ -156,7 +159,7 @@ class Widget_Command extends WP_CLI_Command {
 		}
 		unset( $option_keys['_multiwidget'] );
 		$option_keys                     = array_keys( $option_keys );
-		$last_key                        = array_pop( $option_keys );
+		$last_key                        = (int) array_pop( $option_keys );
 		$option_index                    = $last_key + 1;
 		$widget_options[ $option_index ] = $this->sanitize_widget_options( $name, $assoc_args, array() );
 		$this->update_widget_options( $name, $widget_options );
@@ -624,7 +627,7 @@ class Widget_Command extends WP_CLI_Command {
 	 * Gets the widgets (and their associated data) for a given sidebar
 	 *
 	 * @param string $sidebar_id
-	 * @return array
+	 * @return list<object{name: string, id: string, position: int, options: array<string, mixed>}&\stdClass>
 	 */
 	private function get_sidebar_widgets( $sidebar_id ) {
 
@@ -640,24 +643,33 @@ class Widget_Command extends WP_CLI_Command {
 			$prepared_widget = new stdClass();
 
 			$parts        = explode( '-', $widget_id );
-			$option_index = array_pop( $parts );
+			$option_index = (string) array_pop( $parts );
 			$widget_name  = implode( '-', $parts );
 
 			$prepared_widget->name     = $widget_name;
 			$prepared_widget->id       = $widget_id;
 			$prepared_widget->position = $key + 1;
 			$widget_options            = get_option( 'widget_' . $widget_name );
-			$prepared_widget->options  = $widget_options[ $option_index ];
+			/**
+			 * @var array<string, mixed> $widget_options
+			 */
+			$prepared_widget->options = $widget_options[ $option_index ];
 
 			$prepared_widgets[] = $prepared_widget;
 		}
+
+		/**
+		 * @phpstan-var list<object{name: string, id: string, position: int, options: array<string, mixed>}&\stdClass> $prepared_widgets
+		 */
 
 		return $prepared_widgets;
 	}
 
 	/**
 	 * Re-implementation of wp_get_sidebars_widgets()
-	 * because the original has a nasty global component
+	 * because the original has a nasty global component.
+	 *
+	 * @return array<string, array<int, string>>
 	 */
 	private function wp_get_sidebars_widgets() {
 		$sidebars_widgets = get_option( 'sidebars_widgets', array() );
@@ -666,6 +678,10 @@ class Widget_Command extends WP_CLI_Command {
 			unset( $sidebars_widgets['array_version'] );
 		}
 
+		/**
+		 * @var array<string, array<int, string>> $sidebars_widgets
+		 */
+
 		return $sidebars_widgets;
 	}
 
@@ -673,7 +689,7 @@ class Widget_Command extends WP_CLI_Command {
 	 * Gets the widget's name, option index, sidebar, and sidebar index from its ID
 	 *
 	 * @param string $widget_id
-	 * @return array
+	 * @return array{0: string, 1: string, 2: string, 3: int}
 	 */
 	private function get_widget_data( $widget_id ) {
 
@@ -694,24 +710,28 @@ class Widget_Command extends WP_CLI_Command {
 			}
 		}
 
-		return array( $name, $option_index, $sidebar_id, $sidebar_index );
+		return array( $name, $option_index, (string) $sidebar_id, (int) $sidebar_index );
 	}
 
 	/**
 	 * Gets the options for a given widget
 	 *
 	 * @param string $name
-	 * @return array
+	 * @return array<string, mixed>
 	 */
 	private function get_widget_options( $name ) {
-		return get_option( 'widget_' . $name, array() );
+		$options = get_option( 'widget_' . $name, array() );
+		/**
+		 * @var array<string,mixed> $options
+		 */
+		return $options;
 	}
 
 	/**
 	 * Updates the options for a given widget
 	 *
 	 * @param string $name
-	 * @param mixed
+	 * @param mixed $value
 	 */
 	private function update_widget_options( $name, $value ) {
 		update_option( 'widget_' . $name, $value );
@@ -785,7 +805,7 @@ class Widget_Command extends WP_CLI_Command {
 	 * @param string $id_base Name of the widget
 	 * @param mixed $dirty_options
 	 * @param mixed $old_options
-	 * @return mixed
+	 * @return array<string, mixed>
 	 */
 	private function sanitize_widget_options( $id_base, $dirty_options, $old_options ) {
 
@@ -797,6 +817,6 @@ class Widget_Command extends WP_CLI_Command {
 		// No easy way to determine expected array keys for $dirty_options
 		// because Widget API dependent on the form fields
 		// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- Whitelisting due to above reason.
-		return @$widget->update( $dirty_options, $old_options );
+		return @$widget->update( $dirty_options, $old_options ); // @phpstan-ignore argument.type, argument.type
 	}
 }

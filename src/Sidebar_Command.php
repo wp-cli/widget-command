@@ -18,6 +18,9 @@ use WP_CLI\Formatter;
  */
 class Sidebar_Command extends WP_CLI_Command {
 
+	/**
+	 * @var string[]
+	 */
 	private $fields = [
 		'name',
 		'id',
