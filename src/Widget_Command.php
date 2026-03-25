@@ -649,7 +649,7 @@ class Widget_Command extends WP_CLI_Command {
 			$prepared_widget->name     = $widget_name;
 			$prepared_widget->id       = $widget_id;
 			$prepared_widget->position = $key + 1;
-			$widget_options            = get_option( 'widget_' . $widget_name );
+			$widget_options            = get_option( 'widget_' . $widget_name, [] );
 			/**
 			 * @var array<string, mixed> $widget_options
 			 */
