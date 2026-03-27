@@ -3,7 +3,7 @@ wp-cli/widget-command
 
 Adds, moves, and removes widgets; lists sidebars.
 
-[![Testing](https://github.com/wp-cli/widget-command/actions/workflows/testing.yml/badge.svg)](https://github.com/wp-cli/widget-command/actions/workflows/testing.yml)
+[![Testing](https://github.com/wp-cli/widget-command/actions/workflows/testing.yml/badge.svg)](https://github.com/wp-cli/widget-command/actions/workflows/testing.yml) [![Code Coverage](https://codecov.io/gh/wp-cli/widget-command/branch/main/graph/badge.svg)](https://codecov.io/gh/wp-cli/widget-command/tree/main)
 
 Quick links: [Using](#using) | [Installing](#installing) | [Contributing](#contributing) | [Support](#support)
 
