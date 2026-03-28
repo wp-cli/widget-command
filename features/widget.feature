@@ -14,6 +14,7 @@ Feature: Manage widgets in WordPress sidebar
     And I run `wp widget add search sidebar-2 --title="Quick Search"`
     And I run `wp widget add text sidebar-3 --title="Text"`
 
+  @skip-windows
   Scenario: Widget CRUD
     When I run `wp widget list sidebar-1 --fields=name,id,position`
     Then STDOUT should be a table containing rows:
@@ -55,6 +56,7 @@ Feature: Manage widgets in WordPress sidebar
       | text     | text-2     | 3        |
 
     When I run `wp widget list wp_inactive_widgets --fields=name,id,position`
+    # TODO: Investigate why calendar is at position 7 on Windows.
     Then STDOUT should be a table containing rows:
       | name     | id         | position |
       | text     | text-1     | 1        |

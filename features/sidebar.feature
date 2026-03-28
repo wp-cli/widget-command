@@ -30,7 +30,12 @@ Feature: Manage WordPress sidebars
       0
       """
 
-    When I run `wp eval 'update_option( "sidebars_widgets", array_merge( wp_get_sidebars_widgets(), [ "orphaned-sidebar-1" => [] ] ) );'`
+    Given a sidebar-update.php file:
+      """
+      <?php
+      update_option( 'sidebars_widgets', array_merge( wp_get_sidebars_widgets(), [ 'orphaned-sidebar-1' => [] ] ) );
+      """
+    When I run `wp eval-file sidebar-update.php`
     And I run `wp sidebar list --inactive --fields=id --format=csv`
     Then STDOUT should be:
       """
