@@ -2,7 +2,10 @@ Feature: Manage WordPress sidebars
   Background:
     Given a WP install
     And I try `wp theme delete twentytwelve --force`
-    And I run `wp theme install twentytwelve --activate`
+    And these installed and active themes:
+      """
+      twentytwelve
+      """
 
   Scenario: List available sidebars
     When I run `wp sidebar list --fields=name,id`
