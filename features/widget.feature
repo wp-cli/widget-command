@@ -6,13 +6,15 @@ Feature: Manage widgets in WordPress sidebar
     And I run `wp theme install twentytwelve --activate`
     And I try `wp widget reset --all`
     And I try `wp widget delete wp_inactive_widgets $(wp widget list wp_inactive_widgets --format=ids)`
-    And I run `wp widget add text sidebar-1 --title="Text 1"`
-    And I run `wp widget add archives sidebar-1 --title="Archives"`
-    And I run `wp widget add calendar sidebar-1 --title="Calendar"`
-    And I run `wp widget add search sidebar-1 --title="Quick Search"`
-    And I run `wp widget add text sidebar-1 --title="Text 2"`
-    And I run `wp widget add search sidebar-2 --title="Quick Search"`
-    And I run `wp widget add text sidebar-3 --title="Text"`
+    And these setup commands:
+      | command                                               |
+      | wp widget add text sidebar-1 --title="Text 1"         |
+      | wp widget add archives sidebar-1 --title="Archives"   |
+      | wp widget add calendar sidebar-1 --title="Calendar"   |
+      | wp widget add search sidebar-1 --title="Quick Search" |
+      | wp widget add text sidebar-1 --title="Text 2"         |
+      | wp widget add search sidebar-2 --title="Quick Search" |
+      | wp widget add text sidebar-3 --title="Text"           |
 
   @skip-windows
   Scenario: Widget CRUD
