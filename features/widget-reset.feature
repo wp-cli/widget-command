@@ -3,7 +3,10 @@ Feature: Reset WordPress sidebars
   Background:
     Given a WP install
     And I try `wp theme delete twentytwelve --force`
-    And I run `wp theme install twentytwelve --activate`
+    And these installed and active themes:
+      """
+      twentytwelve
+      """
     And I try `wp widget reset --all`
     And I try `wp widget delete wp_inactive_widgets $(wp widget list wp_inactive_widgets --format=ids)`
 

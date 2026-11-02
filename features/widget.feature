@@ -3,7 +3,10 @@ Feature: Manage widgets in WordPress sidebar
   Background:
     Given a WP install
     And I try `wp theme delete twentytwelve --force`
-    And I run `wp theme install twentytwelve --activate`
+    And these installed and active themes:
+      """
+      twentytwelve
+      """
     And I try `wp widget reset --all`
     And I try `wp widget delete wp_inactive_widgets $(wp widget list wp_inactive_widgets --format=ids)`
     And I run `wp widget add text sidebar-1 --title="Text 1"`
