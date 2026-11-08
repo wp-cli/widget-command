@@ -110,6 +110,19 @@ Feature: Manage widgets in WordPress sidebar
       | name     | position | options                                         |
       | archives | 2        | {"title":"New Archives","count":0,"dropdown":0} |
 
+  Scenario: Move a widget to a position in another sidebar
+    When I run `wp widget move archives-1 --sidebar-id=sidebar-2 --position=2`
+    Then STDOUT should be:
+      """
+      Success: Widget moved.
+      """
+
+    When I run `wp widget list sidebar-2 --fields=id,position`
+    Then STDOUT should be a table containing rows:
+      | id         | position |
+      | search-2   | 1        |
+      | archives-1 | 2        |
+
   Scenario: Patch widget options
     When I run `wp widget patch update archives-1 title "Patched Archives"`
     Then STDOUT should be:
