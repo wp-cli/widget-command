@@ -361,7 +361,7 @@ class Widget_Command extends WP_CLI_Command {
 
 		$new_sidebar_index = ! empty( $assoc_args['position'] ) ? $assoc_args['position'] - 1 : $current_sidebar_index;
 		// Moving between sidebars adds to the top.
-		if ( $new_sidebar_id !== $current_sidebar_id && $new_sidebar_index === $current_sidebar_index ) {
+		if ( $new_sidebar_id !== $current_sidebar_id && empty( $assoc_args['position'] ) ) {
 			// Human-readable positions are different than numerically indexed array.
 			$new_sidebar_index = 0;
 		}
